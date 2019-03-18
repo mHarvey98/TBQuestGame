@@ -24,7 +24,7 @@
             <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-            
+
         </Style>
 
         <Style x:Key="TextBox_Main" TargetType="TextBox">
@@ -48,11 +48,45 @@
             <Setter Property="Background" Value="{StaticResource MainButtonGradient}"/>
         </Style>
 
+        <Style x:Key="ListBoxItem_TravelLocations" TargetType="ListBoxItem">
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <TextBlock Height="30" Text=" Name: " />
+                            <TextBlock Height="30" FontWeight="Regular" Text="{Binding CurrentLocation.Name}" />
+                            <TextBlock Height="30" Text="  Id: " />
+                            <TextBlock Height="30" FontWeight="Regular" Text="{Binding CurrentLocation.Id}" />
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ComboBox_Travel" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Setter Property="ItemsSource" 
+                Value="{Binding Path=AccessibleLocations, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedLocation}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Window.Resources>
 
     <Grid Opacity=".8">
         <Grid.Background>
-            <ImageBrush ImageSource="C:\Users\Mitch\Documents\Classes Spring 2019\CIT 195 -- Application Development\Week 7\TBQuestGame\TBQuestGame\Assets\100Bill.jpg" 
+            <ImageBrush ImageSource="C:\Users\Mitch\Documents\Classes Spring 2019\CIT 195 -- Application Development\Week 7\TBQuestGame\TBQuestGame.S2\Assets\100Bill.jpg" 
                         Stretch="Fill" Opacity=".25"/>
         </Grid.Background>
         <Grid.RowDefinitions>
@@ -147,7 +181,22 @@
                     <Border Style="{StaticResource Border_Main}" BorderThickness="1" Width="65">
                         <Label Content="TRAVEL: " Style="{StaticResource Label_Main}" FontWeight="Bold" Padding="2"/>
                     </Border>
-                    <ComboBox Height="30" Width="170" Margin="10,0,0,0" Opacity=".75"/>
+                    <!--<ComboBox Text="Cbox might be better than ListBox here" ItemsSource="{Binding AccessibleLocations}" SelectedItem="{Binding CurrentLocationName}" Height="30" Width="170" Margin="10,0,0,0" Opacity=".75"/>-->
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Current Location:" TextWrapping="Wrap" Height="50" Width="50" Margin="5,5,0,0" FontWeight="Medium" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                        </StackPanel>
+                        <TextBox Text="{Binding CurrentLocation.Name, Mode=TwoWay}" Style="{StaticResource TextBox_Main}" Margin="5,0,0,0" FontWeight="Medium" FontSize="12" Width="115" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <!--<Label Content="Grand Rapids, MI" Margin="15.7,7.25,0,0" FontWeight="Medium" FontSize="12" Width="140" HorizontalAlignment="Left"/>-->
+
+
+                    <!--<ListBox Name="ListBox_TravelLocations" ItemsSource="{Binding Path=AccessibleLocations}" SelectedItem="{Binding CurrentLocationName, Mode=TwoWay}" Height="30" Width="170" Margin="10,0,0,0" Opacity=".75">
+                        SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
+                                     IsSynchronizedWithCurrentItem="true">
+                        <ListBoxItem Style="{StaticResource ListBoxItem_TravelLocations}" />
+
+                    </ListBox>-->
                 </StackPanel>
             </Border>
 
@@ -171,6 +220,10 @@
 
             <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource Border_Main}" Margin="5,0,0,5" BorderThickness=".5,0,.5,.5">
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="125*"/>
+                        <ColumnDefinition Width="134*"/>
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
@@ -178,15 +231,48 @@
                         <RowDefinition Height="3*"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <ComboBox
+                        x:Name="ComboBox_TravelLocations"
+                        Style="{StaticResource ComboBox_Travel}"
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        Height="30" 
+                        Width="170"                         
+                        Margin="0" 
+                        Opacity=".75"
+                        FontWeight="Medium"
+                        FontSize="12"             
+                        SelectedItem="{Binding SelectedLocation}"
+                        SelectedValuePath="Current Location"
+                        SelectedValue="{Binding CurrentLocationName}" 
+                        HorizontalAlignment="Center"
+                        >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding Name}"/>
+
+                                <!--<StackPanel Orientation="Horizontal" Margin="0">
+                                        <Label
+                                            Content="{Binding BindingName}"
+                                            ContentStringFormat="Name: {0}"/>
+                                        <TextBox
+                                            Text="{Binding Accessible, StringFormat='\{0\}'}"/>
+                                        Style="{StaticResource TextBox_Main"/>
+
+                                    </StackPanel>-->
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="19,0,18.667,0.333">
                         <Label Content="Cost:" Style="{StaticResource Label_Main}"/>
-                        <TextBox Style="{StaticResource TextBox_Main}"/>
-                        <Button Content="GO" Style="{StaticResource Button_Main}" Height="30" Width="40" Margin="30,0,10,0"/>
+                        <TextBox Style="{StaticResource TextBox_Main}" Text="{Binding SelectedLocation.ModifyCash}"/>
+                        <Button x:Name="Button_TravelGo" Content="GO" Style="{StaticResource Button_Main}" Height="30" Width="40" Margin="30,0,10,0" Click="Button_TravelGo_Click" />
                     </StackPanel>
 
-                    <Label Grid.Row="2" Content="Area Info:" Style="{StaticResource Label_Main}" />
+                    <Label Grid.Row="2" Content="Area Info:" Style="{StaticResource Label_Main}" Grid.ColumnSpan="2"/>
 
-                    <TextBox Grid.Row="3" Style="{StaticResource TextBox_Main}" Height="120" Width="240"/>
+                    <TextBox Text="{Binding SelectedLocation.Description}" Grid.Row="3" Style="{StaticResource TextBox_Main}" Height="100" Width="240" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.ColumnSpan="2" Margin="9,1,9.667,1.667"/>
 
                 </Grid>
             </Border>
