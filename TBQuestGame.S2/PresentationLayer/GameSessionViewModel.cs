@@ -16,6 +16,7 @@ namespace TBQuestGame.PresentationLayer
         // Fields
         private Player _player;
         private List<string> _messages;
+        private List<Occupation> _allOccupations;
         private DateTime _gameStartTime;
         private Map _gameMap;
         private Location _currentLocation;
@@ -25,6 +26,12 @@ namespace TBQuestGame.PresentationLayer
 
 
         // Properties
+        public List<Occupation> AllOccupations
+        {
+            get { return _allOccupations; }
+            set { _allOccupations = value; }
+        }
+
         public Location SelectedLocation
         {
             get { return _selectedLocation; }
@@ -97,13 +104,15 @@ namespace TBQuestGame.PresentationLayer
             Player player,
             List<string> initialMessages,
             Map gameMap,
-            Location currentLocation)
+            Location currentLocation,
+            List<Occupation> allOccupations)
         {
             _player = player;
             _messages = initialMessages;
             _gameMap = gameMap;
-            //_currentLocationName = currentLocation.Name;
+            _currentLocationName = currentLocation.Name;
             _currentLocation = currentLocation;
+            _allOccupations = allOccupations;
 
             InitializeView();
         }
@@ -114,38 +123,34 @@ namespace TBQuestGame.PresentationLayer
         {
             _gameStartTime = DateTime.Now;
             _accessibleLocations = _gameMap.AccessibleLocations;
+            UpdateAccessibleLocation();
         }
 
         public void OnPlayerMove()
         {
-
             if (_selectedLocation != _currentLocation) // Execute code if selected location isn't the same as current location
             {
-                //
-                // set new current location
-                //
-                _currentLocationName = _selectedLocation.Name;
+                try
+                {
+                    //
+                    // set new current location
+                    //
+                    _currentLocationName = _selectedLocation.Name;
 
-                _currentLocation = AccessibleLocations.FirstOrDefault(l => l.Name == _currentLocationName);
+                    _currentLocation = AccessibleLocations.FirstOrDefault(l => l.Name == _currentLocationName);
 
+                    OnPropertyChanged("CurrentLocation");
 
+                    //
+                    // update cash
+                    //
+                    _player.PreviousCash = _player.Cash;
+                    _player.Cash += _selectedLocation.ModifyCash;
 
-                OnPropertyChanged("CurrentLocation");
-
-                //
-                // update cash
-                //
-                _player.Cash -= _selectedLocation.ModifyCash;
-
-
-
-                // First attempt at removing accessible locations
-
-                //_accessibleLocations = _gameMap.AccessibleLocations;
-                //if (_selectedLocation == _currentLocation)
-                //{
-                //    _accessibleLocations.Remove(_currentLocation);
-                //}
+                    // First attempt at removing accessible locations
+                    UpdateAccessibleLocation();
+                }
+                catch (NullReferenceException) { } // prevents null selected location from crashing program
             }
         }
 
@@ -157,5 +162,27 @@ namespace TBQuestGame.PresentationLayer
         {
             get { return string.Join("\n\n", _messages); }
         }
+
+        public void UpdateAccessibleLocation()
+        {
+            _accessibleLocations.Clear();
+
+            foreach (Location location in _gameMap.Locations)
+            {
+                if (location.Accessible == true)
+                {
+                    _accessibleLocations.Add(location);
+                }
+            }
+
+            //remove current location
+            _accessibleLocations.Remove(_accessibleLocations.FirstOrDefault(l => l.Name == _currentLocationName));
+
+            OnPropertyChanged("CurrentLocation");
+            OnPropertyChanged("AccessibleLocations");
+        }
+
+
+
     }
 }

@@ -24,7 +24,6 @@
             <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-
         </Style>
 
         <Style x:Key="TextBox_Main" TargetType="TextBox">
@@ -32,6 +31,17 @@
             <Setter Property="Width" Value="100"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="Opacity" Value=".75"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5,0,0,0"/>
+        </Style>
+
+        <Style x:Key="Label_TextBox_Main_Lookalike" TargetType="Label">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Opacity" Value=".75"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="Medium"/>
@@ -82,7 +92,135 @@
             </Setter>
         </Style>
 
+        <Storyboard x:Key="Label_PlayerCash_NumberUp">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="label1">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="30"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="label">
+                <EasingDoubleKeyFrame KeyTime="0" Value="-28"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="label">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Player.Cash}"/>
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{Binding Player.Cash}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="label1">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Player.PreviousCash}"/>
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{Binding Player.PreviousCash}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="label1">
+                <EasingColorKeyFrame KeyTime="0" Value="Red"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.5" Value="Red"/>
+            </ColorAnimationUsingKeyFrames>
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="label">
+                <EasingColorKeyFrame KeyTime="0" Value="Green"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.5" Value="Green"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="Label_PlayerCash_NumberDown">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="label">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-28"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="label1">
+                <EasingDoubleKeyFrame KeyTime="0" Value="28"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="label">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Player.PreviousCash}"/>
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{Binding Player.PreviousCash}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="label1">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Player.Cash}"/>
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{Binding Player.Cash}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="label">
+                <EasingColorKeyFrame KeyTime="0" Value="Green"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.5" Value="Green"/>
+            </ColorAnimationUsingKeyFrames>
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="label1">
+                <EasingColorKeyFrame KeyTime="0" Value="Red"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.5" Value="Red"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="Label_PlayerCash_NumberDown_Again">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="label">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-28"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="label1">
+                <EasingDoubleKeyFrame KeyTime="0" Value="28"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="label">
+                <EasingColorKeyFrame KeyTime="0" Value="Red"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.5" Value="Red"/>
+            </ColorAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="label">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Player.PreviousCash}"/>
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{Binding Player.PreviousCash}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="label1">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Player.Cash}"/>
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{Binding Player.Cash}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="label1">
+                <EasingColorKeyFrame KeyTime="0" Value="Red"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.5" Value="Red"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="Label_PlayerCash_NumberUp_Again">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="label1">
+                <EasingColorKeyFrame KeyTime="0" Value="Green"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.5" Value="Green"/>
+            </ColorAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="label">
+                <EasingDoubleKeyFrame KeyTime="0" Value="-28"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="label1">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="28"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="label1">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Player.PreviousCash}"/>
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{Binding Player.PreviousCash}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="label">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Player.Cash}"/>
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{Binding Player.Cash}"/>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="Label_PlayerCash_Reset">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="label">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Player.Cash}"/>
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.1" Value="{Binding Player.Cash}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="label1">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Null}"/>
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.1" Value="{Binding Player.Cash}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="label1">
+                <EasingColorKeyFrame KeyTime="0" Value="#FF000100"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="Green"/>
+            </ColorAnimationUsingKeyFrames>
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="label">
+                <EasingColorKeyFrame KeyTime="0" Value="#FF000100"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="Green"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+
     </Window.Resources>
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource Label_PlayerCash_NumberUp}"/>
+            <BeginStoryboard Storyboard="{StaticResource Label_PlayerCash_NumberUp_Again}"/>
+            <BeginStoryboard Storyboard="{StaticResource Label_PlayerCash_NumberDown}"/>
+            <BeginStoryboard Storyboard="{StaticResource Label_PlayerCash_NumberDown_Again}"/>
+            <BeginStoryboard Storyboard="{StaticResource Label_PlayerCash_Reset}"/>
+        </EventTrigger>
+    </Window.Triggers>
 
     <Grid Opacity=".8">
         <Grid.Background>
@@ -141,9 +279,115 @@
 
                         <StackPanel Grid.Row="1" Orientation="Horizontal">
                             <Label Content="Cash:" Style="{StaticResource Label_Main}"/>
-                            <TextBox Text="{Binding Player.Cash}" Style="{StaticResource TextBox_Main}"/>
+                            <Grid Height="30" Width="100" Margin="5,0,0,0" ClipToBounds="True">
+                                <TextBox Style="{StaticResource TextBox_Main}" Text=""/>
+                                <Label x:Name="label" Content="{Binding Player.Cash}" 
+                                       Style="{StaticResource Label_TextBox_Main_Lookalike}"
+                                       Foreground="#FF000100" FontWeight="Medium"
+                                       RenderTransformOrigin=".5,.5">
+                                    <Label.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform/>
+                                            <SkewTransform/>
+                                            <RotateTransform/>
+                                            <TranslateTransform Y="-28"/>
+                                        </TransformGroup>
+                                    </Label.RenderTransform>
+
+
+                                </Label>
+                                <Label x:Name="label1" Content="{Binding Player.Cash}" 
+                                       Style="{StaticResource Label_TextBox_Main_Lookalike}"
+                                       Foreground="#FF000100" FontWeight="Medium"
+                                       RenderTransformOrigin=".5,.5">
+                                    <Label.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform/>
+                                            <SkewTransform/>
+                                            <RotateTransform/>
+                                            <TranslateTransform/>
+                                        </TransformGroup>
+                                    </Label.RenderTransform>
+                                </Label>
+
+                            </Grid>
+
+                            <!--<Grid HorizontalAlignment="Center"  VerticalAlignment="Center" Margin="0" ClipToBounds="True">
+                                <Grid.Resources>
+                                    <Storyboard x:Key="flipItGood" Duration="0:0:3" RepeatBehavior="Forever">
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" 
+                                           Storyboard.TargetName="A"
+                                           Duration="2">
+                                            <EasingDoubleKeyFrame KeyTime="0:0:1" Value="0"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" 
+                                           Storyboard.TargetName="B"
+                                           Duration="2">
+                                            <EasingDoubleKeyFrame KeyTime="0:0:1" Value="30"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </Grid.Resources>
+                                
+                                <Grid.Triggers>
+                                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                        <BeginStoryboard Storyboard="{StaticResource flipItGood}"/>                                        
+                                    </EventTrigger>                                    
+                                </Grid.Triggers>
+
+                                <TextBox x:Name="A" 
+                                    Style="{StaticResource TextBox_Main}"
+                                    Height="30"
+                                    Text="{Binding Player.Cash}" 
+                                    Foreground="Green" FontWeight="Medium"
+                                    RenderTransformOrigin=".5,.5">
+                                    <TextBox.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform/>
+                                            <SkewTransform/>
+                                            <RotateTransform/>
+                                            <TranslateTransform Y="-28"/>
+                                        </TransformGroup>
+                                    </TextBox.RenderTransform>
+
+                                    <TextBox.Triggers>
+
+                                        <EventTrigger RoutedEvent="Binding.TargetUpdated">
+                                            <BeginStoryboard Storyboard="{StaticResource flipItGood}"/>
+                                        </EventTrigger>
+
+                                    </TextBox.Triggers>
+                                </TextBox>
+                                <TextBox x:Name="B" 
+                                    Text="Red"
+                                    Style="{StaticResource TextBox_Main}"
+                                    Height="30"
+                                    FontWeight="Bold"
+                                    Foreground="Red" RenderTransformOrigin="0.5,0.5">
+                                    <TextBox.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform/>
+                                            <SkewTransform/>
+                                            <RotateTransform/>
+                                            <TranslateTransform/>
+                                        </TransformGroup>
+                                    </TextBox.RenderTransform>
+                                </TextBox>-->
+
+                            <!--</Grid>-->
+                            <!--<DataGrid>
+                                <DataTemplate>
+                                    <Border Name="templateBorder">
+                                        <TextBlock Name="templateTextBlock" Text="{Binding Path=FirstName, NotifyOnTargetUpdated=True}" />
+                                    </Border>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding Path=MyProperty}" Value="True">
+                                            <BeginStoryboard Storyboard=""/>
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </DataGrid>-->
                             <Label Content="Networking Points:" Style="{StaticResource Label_Main}"/>
-                            <TextBox Text="{Binding Player.NetworkingPoints}" Style="{StaticResource TextBox_Main}"/>
+                            <TextBox x:Name="TextBox_NetworkingPoints" Text="{Binding Player.NetworkingPoints}" Style="{StaticResource TextBox_Main}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Row="2" Orientation="Horizontal">
@@ -241,7 +485,8 @@
                         Margin="0" 
                         Opacity=".75"
                         FontWeight="Medium"
-                        FontSize="12"             
+                        FontSize="12"            
+                        ItemsSource="{Binding AccessibleLocations}"
                         SelectedItem="{Binding SelectedLocation}"
                         SelectedValuePath="Current Location"
                         SelectedValue="{Binding CurrentLocationName}" 
@@ -250,16 +495,6 @@
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <Label Content="{Binding Name}"/>
-
-                                <!--<StackPanel Orientation="Horizontal" Margin="0">
-                                        <Label
-                                            Content="{Binding BindingName}"
-                                            ContentStringFormat="Name: {0}"/>
-                                        <TextBox
-                                            Text="{Binding Accessible, StringFormat='\{0\}'}"/>
-                                        Style="{StaticResource TextBox_Main"/>
-
-                                    </StackPanel>-->
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>

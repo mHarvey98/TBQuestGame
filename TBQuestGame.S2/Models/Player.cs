@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TBQuestGame.Models;
 using WageSlave.Models;
+using System.Collections.ObjectModel;
+
 
 namespace TBQuestGame.Models
 {
     public class Player : Character
-    {
-        //Enums
-        public enum SchoolRoute { None, TradeSchool, University}
-        
+    {        
         // Fields
         private int _age;
         private int _cash;
@@ -22,8 +22,34 @@ namespace TBQuestGame.Models
         private int _totalEarned;
         private int _totalSpent;
         private int _weeksPassed;
-        private SchoolRoute _schoolRoute;
         private List<Location> _locationsVisited;
+        private int _previousCash;
+        private List<Occupation> _allOccupations;
+        private Occupation _occupation;
+
+
+        //Properties
+        public Occupation Occupation
+        {
+            get { return _occupation; }
+            set { _occupation = value; }
+        }
+
+        public List<Occupation> AllOccupations
+        {
+            get { return _allOccupations; }
+            set { _allOccupations = value; }
+        }
+
+        public int PreviousCash
+        {
+            get { return _previousCash; }
+            set
+            {
+                _previousCash = value;
+                OnPropertyChanged(nameof(PreviousCash));
+            }
+        }
 
         public List<Location> LocationsVisited
         {
@@ -31,51 +57,64 @@ namespace TBQuestGame.Models
             set { _locationsVisited = value; }
         }
 
-
-
-
-
-        //Properties
         public int WeeksPassed
         {
             get { return _weeksPassed; }
-            set { _weeksPassed = value; }
-        }
-
-        public SchoolRoute School_Route
-        {
-            get { return _schoolRoute; }
-            set { _schoolRoute = value; }
+            set
+            {
+                _weeksPassed = value;
+                OnPropertyChanged(nameof(WeeksPassed));
+            }
         }
 
         public int Wage
         {
             get { return _wage; }
-            set { _wage = value; }
+            set
+            {
+                _wage = value;
+                OnPropertyChanged(nameof(Wage));
+            }
         }
 
         public int TotalSpent
         {
             get { return _totalSpent; }
-            set { _totalSpent = value; }
+            set
+            {
+                _totalSpent = value;
+                OnPropertyChanged(nameof(TotalSpent));
+            }
         }
 
         public int TotalEarned
         {
             get { return _totalEarned; }
-            set { _totalEarned = value; }
+            set
+            {
+                _totalEarned = value;
+                OnPropertyChanged(nameof(TotalEarned));
+            }
         }
 
         public int NetworkingPoints
         {
             get { return _networkingPoints; }
-            set { _networkingPoints = value; }
+            set
+            {
+                _networkingPoints = value;
+                OnPropertyChanged(nameof(NetworkingPoints));
+            }
         }
 
         public int CostOfLiving
         {
             get { return _costOfLiving; }
-            set { _costOfLiving = value; }
+            set
+            {
+                _costOfLiving = value;
+                OnPropertyChanged(nameof(CostOfLiving));
+            }
         }
 
         public int Cash
@@ -91,7 +130,11 @@ namespace TBQuestGame.Models
         public int Age
         {
             get { return _age; }
-            set { _age = value; }
+            set
+            {
+                _age = value;
+                OnPropertyChanged(nameof(Age));
+            }
         }
 
 
@@ -127,18 +170,18 @@ namespace TBQuestGame.Models
         /// set the proper article based on the job title
         /// </summary>
         /// <returns>default greeting</returns>
-        public override string DefaultGreeting()
-        {
-            string article = "a";
+        //public override string DefaultGreeting()
+        //{
+        //    //string article = "a";
 
-            List<string> vowels = new List<string>() { "A", "E", "I", "O", "U" };
+        //    //List<string> vowels = new List<string>() { "A", "E", "I", "O", "U" };
 
-            if (vowels.Contains(occupation.ToString().Substring(0, 1)))
-            {
-                article = "an";
-            }
+        //    //if (vowels.Contains(occupation.ToString().Substring(0, 1)))
+        //    //{
+        //    //    article = "an";
+        //    //}
 
-            return $"Hello, my name is {Name} and I am {article} {occupation} for the Aion Project.";
-        }
+        //    //return $"Hello, my name is {Name} and I am {article} {occupation} for the Aion Project.";
+        //}
     }
 }

@@ -14,9 +14,11 @@ namespace TBQuestGame.BusinessLayer
     public class GameBusiness
     {
         GameSessionViewModel _gameSessionViewModel;
-        //bool _newPlayer = true;                                           Uncomment
+        PlayerSetupViewModel _playerSetupViewModel;
+        bool _newPlayer = true;                                          
         Player _player = new Player();
         List<string> _messages;
+        List<Occupation> _allOccupations;
         //PlayerSetupView _playerSetupView = null;                          Uncomment
         Map _gameMap;
         Location _currentLocation;
@@ -24,9 +26,21 @@ namespace TBQuestGame.BusinessLayer
 
         public GameBusiness()
         {
-            //SetupPlayer();
             InitializeDataSet();
+            SetupPlayer();
             InstantiateAndShowView();
+
+            //_playerSetupViewModel = new GameSessionViewModel(
+            //    _player,
+            //    _messages,
+            //    _gameMap,
+            //    _currentLocation,
+            //    _allOccupations);
+
+            //gameSessionView.DataContext = _playerSetupViewModel;
+
+            
+
         }
 
         /// <summary>
@@ -38,28 +52,36 @@ namespace TBQuestGame.BusinessLayer
             _messages = GameData.InitialMessages();
             _gameMap = GameData.GameMap();
             _currentLocation = GameData.InitialGameMapLocation();
+            _allOccupations = GameData.PlayerOccupations();
         }
 
 
-        //private void SetupPlayer()
-        //{
-        //    if (_newPlayer)
-        //    {
-        //        PlayerSetupView _playerSetupView = new PlayerSetupView(_player);
-        //        _playerSetupView.ShowDialog();
+        private void SetupPlayer()
+        {
+            if (_newPlayer)
+            {
+                _playerSetupViewModel = new PlayerSetupViewModel(                    
+                    _allOccupations, 
+                    _gameMap,                   
+                    _player,
+                    _currentLocation);
 
-        //        //
-        //        // setup game based player properties
-        //        //
-        //        _player.Cash = 10000;
-        //        _player.happiness = Character.Happiness.VeryHigh;
-        //        _player.NetworkingPoints = 10;
-        //    }
-        //    else
-        //    {
-        //        _player = GameData.PlayerData();
-        //    }
-        //}
+                PlayerSetupView _playerSetupView = new PlayerSetupView(_playerSetupViewModel);
+                _playerSetupView.DataContext = _playerSetupViewModel;
+                _playerSetupView.ShowDialog();
+
+                //
+                // setup game-based player properties (not decided by player)
+                //
+                _player.Cash = 10000;
+                _player.happiness = Character.Happiness.VeryHigh;
+                _player.NetworkingPoints = 10;
+            }
+            else
+            {
+                _player = GameData.PlayerData();
+            }
+        }
 
 
 
@@ -76,7 +98,8 @@ namespace TBQuestGame.BusinessLayer
                 _player,
                 _messages,
                 _gameMap,
-                _currentLocation);
+                _currentLocation,
+                _allOccupations);
 
             GameSessionView gameSessionView = new GameSessionView(_gameSessionViewModel);
 

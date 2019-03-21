@@ -10,16 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace WageSlave.PresentationLayer
+namespace TBQuestGame.S2.Test
 {
     /// <summary>
-    /// Interaction logic for PlayerSetupView.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class PlayerSetupView : Window
+    public partial class MainWindow : Window
     {
-        public PlayerSetupView()
+        public MainWindow()
         {
             InitializeComponent();
         }

@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:WageSlave.PresentationLayer"
         mc:Ignorable="d"
         Title="PlayerSetupView" Height="450" Width="800"
+        WindowStartupLocation="CenterOwner"
         Background="#a2bdc8">
     <Window.Resources>
         <LinearGradientBrush x:Key="MainColorGradient" StartPoint="0,0" EndPoint="0,1">
@@ -28,7 +29,16 @@
             <Setter Property="FontSize" Value="27"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Right"/>
-            <Setter Property="Margin" Value="15"/>
+            <Setter Property="Margin" Value="15,0,0,0"/>
+        </Style>
+
+        <Style x:Key="Label_Occupation_Details" TargetType="Label">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="15,0,2,0"/>
         </Style>
 
         <Style x:Key="TextBox_Main" TargetType="TextBox">
@@ -37,7 +47,13 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="IsReadOnly" Value="False"/>
-            <Setter Property="Opacity" Value=".6"/>
+            <Setter Property="Opacity" Value=".5"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="15"/>
         </Style>
 
         <Style x:Key="ComboBox_Main" TargetType="ComboBox">
@@ -48,7 +64,61 @@
             <Setter Property="IsReadOnly" Value="False"/>
             <Setter Property="Opacity" Value=".6"/>
             <Setter Property="Margin" Value="15"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5"/>
         </Style>
+
+        <Style x:Key="ComboBox_Main1" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Setter Property="ItemsSource" 
+                Value="{Binding Path=Player.SchoolRoute, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Player.School_Route}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ComboBox_Locations" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ComboBox_Main}">
+            <Setter Property="ItemsSource" 
+                Value="{Binding Path=AccessibleLocations, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedLocation}" Value="False">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ComboBox_Occupations" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ComboBox_Main}">
+            <Setter Property="ItemsSource" 
+                Value="{Binding Path=AllOccupations, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedOccupation}" Value="False">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Window.Resources>
     
     <Grid Opacity=".8">
@@ -69,7 +139,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="2*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -78,15 +148,62 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="0" Content="Name:" Style="{StaticResource Label_Main}"/>
-            <Label Grid.Row="1" Grid.Column="0" Content="Education:" Style="{StaticResource Label_Main}"/>
-            <Label Grid.Row="2" Grid.Column="0" Content="Occupation:" Style="{StaticResource Label_Main}"/>
+            <Label Grid.Row="0" Grid.Column="0" Content="Name:" Style="{StaticResource Label_Main}"/>           
+            <Label Grid.Row="1" Grid.Column="0" Content="Occupation:" Style="{StaticResource Label_Main}"/>
             <Label Grid.Row="3" Grid.Column="0" Content="Starting Location:" Style="{StaticResource Label_Main}"/>
 
-            <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource TextBox_Main}" Margin="15"/>
-            <ComboBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ComboBox_Main}"/>
-            <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource ComboBox_Main}"/>
-            <ComboBox Grid.Row="3" Grid.Column="1" Style="{StaticResource ComboBox_Main}"/>
+            <TextBox  x:Name="TextBox_Name" Text="{Binding Player.Name, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" Style="{StaticResource TextBox_Main}" Margin="15"/>            
+            <!--<ComboBox x:Name="ComboBox_Occupation" Grid.Row="1" Grid.Column="1" Style="{StaticResource ComboBox_Main}" ItemsSource="{Binding Player.AllOccupations}" SelectedItem="{Binding Player.Occupation}"/>-->
+            <ComboBox
+                x:Name="ComboBox_Occupations"
+                Grid.Row="1" 
+                Grid.Column="1" 
+                FontSize="15"
+                Style="{StaticResource ComboBox_Occupations}"       
+                ItemsSource="{Binding AllOccupations}"
+                SelectedItem="{Binding SelectedOccupation}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <Label Content="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <!--<ComboBox x:Name="ComboBox_Locations"  Grid.Row="3" Grid.Column="1" Style="{StaticResource ComboBox_Main}"/>-->
+
+            <ComboBox
+                x:Name="ComboBox_Locations"
+                Grid.Row="3" 
+                Grid.Column="1" 
+                FontSize="15"
+                Style="{StaticResource ComboBox_Locations}"       
+                ItemsSource="{Binding GameMap.AccessibleLocations}"
+                SelectedItem="{Binding GameMap.CurrentLocation}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <Label Content="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Years in School:" Grid.Row="0" Grid.Column="0" Style="{StaticResource Label_Occupation_Details}"/>
+                <Label Content="Total Debt ($):" Grid.Row="1" Grid.Column="0" Style="{StaticResource Label_Occupation_Details}"/>
+                <Label Content="Average Yearly Salary ($):" Grid.Row="2" Grid.Column="0" Style="{StaticResource Label_Occupation_Details}"/>
+
+                <TextBox Text="{Binding SelectedOccupation.YearsInSchool}" Grid.Row="0" Grid.Column="1" Style="{StaticResource TextBox_Main}" Margin="15,5,0,5" IsReadOnly="True" FontSize="15"/>
+                <TextBox Text="{Binding SelectedOccupation.Debt}" Grid.Row="1" Grid.Column="1" Style="{StaticResource TextBox_Main}" Margin="15,5,0,5" IsReadOnly="True" FontSize="15"/>
+                <TextBox Text="{Binding SelectedOccupation.AvgSalary}" Grid.Row="2" Grid.Column="1" Style="{StaticResource TextBox_Main}" Margin="15,5,0,5" IsReadOnly="True" FontSize="15"/>
+            </Grid>                       
 
             <Border Grid.Column="2" Grid.RowSpan="4" Margin="15" BorderThickness=".5" BorderBrush="Black" Background="LightGray" Opacity=".5">
                 <TextBlock Text=""/>
@@ -95,6 +212,6 @@
             
         </Grid>
 
-        <Button Grid.Row="2" Style="{StaticResource Button_Main}" Content="OK" FontSize="25" FontWeight="Bold" Margin="5" Height="45"/>
+        <Button x:Name="Button_OK" Grid.Row="2" Style="{StaticResource Button_Main}" Content="OK" FontSize="25" FontWeight="Bold" Margin="5" Height="45" Click="Button_OK_Click" />
     </Grid>
 </Window>

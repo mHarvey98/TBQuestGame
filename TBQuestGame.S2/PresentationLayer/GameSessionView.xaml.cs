@@ -14,6 +14,10 @@ using System.Windows.Shapes;
 using TBQuestGame.PresentationLayer;
 using WageSlave.Models;
 using System.Collections.ObjectModel;
+using System.Windows.Media.Animation;
+using System.Windows.Resources;
+using TBQuestGame;
+using WageSlave;
 
 namespace TBQuestGame.PresentationLayer
 {
@@ -23,44 +27,68 @@ namespace TBQuestGame.PresentationLayer
     public partial class GameSessionView : Window
     {
         GameSessionViewModel _gameSessionViewModel;
-
+        string lastMove = "UP";
+        
         public GameSessionView(GameSessionViewModel gameSessionViewModel)
         {
             _gameSessionViewModel = gameSessionViewModel;
             Location current = _gameSessionViewModel.CurrentLocation;
+            _gameSessionViewModel.Player.PreviousCash = 9999;
 
-            //InitializeWindowTheme();
+            //InitializeWindowTheme(); Not sure what to do with this
 
             InitializeComponent();
-
-            ObservableCollection<Location> SelectableLocations = _gameSessionViewModel.AccessibleLocations;
-            var list = from AccessibleLocations in SelectableLocations where AccessibleLocations != current select AccessibleLocations;
-            ComboBox_TravelLocations.ItemsSource = list;
-
-
-
-
-            //ComboBox_TravelLocations.SetBinding(
-            //    ItemsControl.ItemsSourceProperty,
-            //    new Binding { Source = Map.AccessibleLocations });
-
-            //myComboBox.SetBinding(
-            //ItemsControl.ItemsSourceProperty,
-            //new Binding { Source = myList });
-
-            //myComboBox.SetBinding(
-            //Selector.SelectedItemProperty,
-            //new Binding("SelectedItem") { Source = mySelectedItemSource });
         }
 
         private void InitializeWindowTheme()
         {
-            this.Title = "Laughing Leaf Productions";
+            this.Title = "WageSlave";
         }
+
+
 
         private void Button_TravelGo_Click(object sender, RoutedEventArgs e)
         {
-            _gameSessionViewModel.OnPlayerMove();
+            _gameSessionViewModel.OnPlayerMove(); // function updates Cash based on location travelled to
+
+            if (_gameSessionViewModel.Player.Cash > _gameSessionViewModel.Player.PreviousCash) // If cash went up, do this animation
+            {
+                if (lastMove == "UP") // If last move was up, go up again; green to green
+                {
+
+                    ((Storyboard)this.Resources["Label_PlayerCash_NumberUp_Again"]).Begin(this);
+
+                }
+                else // move up; red to green
+                {
+                    ((Storyboard)this.Resources["Label_PlayerCash_NumberUp"]).Begin(this);
+                    lastMove = "UP";
+                }
+
+            }
+
+            else if (_gameSessionViewModel.Player.Cash < _gameSessionViewModel.Player.PreviousCash) // If cash went down, do this animation
+            {
+                if (lastMove == "DOWN") // If last move was down, go down again; red to red
+                {
+                    ((Storyboard)this.Resources["Label_PlayerCash_NumberDown_Again"]).Begin(this);
+                }
+                else // move down; green to red
+                {
+                    ((Storyboard)this.Resources["Label_PlayerCash_NumberDown"]).Begin(this);
+                    lastMove = "DOWN";
+                }
+
+            }
+
+            else
+            {
+                ((Storyboard)this.Resources["Label_PlayerCash_Error"]).Begin(this);
+            }
+
+            //Updating PreviousCash is now handled in OnPlayerMove Method
+            //
+            //_gameSessionViewModel.Player.PreviousCash = _gameSessionViewModel.Player.Cash;
         }
     }
 }

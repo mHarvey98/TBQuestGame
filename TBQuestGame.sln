@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28010.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TBQuestGame.S1", "TBQuestGame\TBQuestGame.S1.csproj", "{2A21D8B6-CF42-4C6F-98A7-EA8387AEE850}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TBQuestGame.S2", "TBQuestGame.S2\TBQuestGame.S2.csproj", "{DEAC6FC6-244D-4E3F-AC00-E3ECDDE7B2FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TBQuestGame.S2", "TBQuestGame.S2\TBQuestGame.S2.csproj", "{2782468C-8D9E-4994-BF0C-A826F15C6C88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{2A21D8B6-CF42-4C6F-98A7-EA8387AEE850}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A21D8B6-CF42-4C6F-98A7-EA8387AEE850}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A21D8B6-CF42-4C6F-98A7-EA8387AEE850}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEAC6FC6-244D-4E3F-AC00-E3ECDDE7B2FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEAC6FC6-244D-4E3F-AC00-E3ECDDE7B2FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEAC6FC6-244D-4E3F-AC00-E3ECDDE7B2FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEAC6FC6-244D-4E3F-AC00-E3ECDDE7B2FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2782468C-8D9E-4994-BF0C-A826F15C6C88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2782468C-8D9E-4994-BF0C-A826F15C6C88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2782468C-8D9E-4994-BF0C-A826F15C6C88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2782468C-8D9E-4994-BF0C-A826F15C6C88}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

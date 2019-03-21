@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{69A55809-1506-433E-A875-00F68736F004}</ProjectGuid>
+    <ProjectGuid>{125A18AF-10D1-4106-AB90-E6DB233A5703}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>WpfTBQuestGame.S2</RootNamespace>
-    <AssemblyName>WpfTBQuestGame.S2</AssemblyName>
+    <RootNamespace>TBQuestGame.S2.Test</RootNamespace>
+    <AssemblyName>TBQuestGame.S2.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -55,31 +55,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BusinessLayer\GameBusiness.cs" />
-    <Compile Include="DataLayer\GameData.cs" />
-    <Page Include="PresentationLayer\GameSessionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="PresentationLayer\PlayerSetupView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Character.cs" />
-    <Compile Include="Models\Player.cs" />
-    <Compile Include="PresentationLayer\GameSessionView.xaml.cs">
-      <DependentUpon>GameSessionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PresentationLayer\GameSessionViewModel.cs" />
-    <Compile Include="PresentationLayer\PlayerSetupView.xaml.cs">
-      <DependentUpon>PlayerSetupView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -104,12 +93,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\100Bill.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\one-hundred-100-dollar-bill.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
