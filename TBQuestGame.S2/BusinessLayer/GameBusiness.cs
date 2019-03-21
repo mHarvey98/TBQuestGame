@@ -15,7 +15,7 @@ namespace TBQuestGame.BusinessLayer
     {
         GameSessionViewModel _gameSessionViewModel;
         PlayerSetupViewModel _playerSetupViewModel;
-        bool _newPlayer = true;                                          
+        bool _newPlayer = false;                                          
         Player _player = new Player();
         List<string> _messages;
         List<Occupation> _allOccupations;
