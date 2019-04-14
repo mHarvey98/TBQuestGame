@@ -92,6 +92,22 @@
             </Setter>
         </Style>
 
+        <Style x:Key="ComboBox_AssetTypes" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Setter Property="ItemsSource" 
+                Value="{Binding Path=AccessibleLocations, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedLocation}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Storyboard x:Key="Label_PlayerCash_NumberUp">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="label1">
                 <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
@@ -274,7 +290,7 @@
                             <Label Content="Name:" Style="{StaticResource Label_Main}"/>
                             <TextBox Text="{Binding Player.Name}" Style="{StaticResource TextBox_Main}"/>
                             <Label Content="Age:" Style="{StaticResource Label_Main}"/>
-                            <TextBox Text="{Binding Player.Age}" Style="{StaticResource TextBox_Main}" Width="40"/>
+                            <TextBox x:Name="TextBox_Player_Age" Text="{Binding Player.Age}" Style="{StaticResource TextBox_Main}" Width="40" TextChanged="TextBox_Player_Age_TextChanged"/>
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Orientation="Horizontal">
@@ -399,7 +415,7 @@
 
                         <StackPanel Grid.Row="3" Orientation="Horizontal">
                             <Label Content="Cost of Living (Per Week):" Style="{StaticResource Label_Main}"/>
-                            <TextBox Text="{Binding Player.CostOfLiving}" Style="{StaticResource TextBox_Main}"/>
+                            <TextBox Text="{Binding WeeklyPayment, Mode=TwoWay}" Style="{StaticResource TextBox_Main}"/>
                         </StackPanel>
 
 
@@ -430,7 +446,7 @@
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="Current Location:" TextWrapping="Wrap" Height="50" Width="50" Margin="5,5,0,0" FontWeight="Medium" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
                         </StackPanel>
-                        <TextBox Text="{Binding CurrentLocation.Name, Mode=TwoWay}" Style="{StaticResource TextBox_Main}" Margin="5,0,0,0" FontWeight="Medium" FontSize="12" Width="115" HorizontalAlignment="Left"/>
+                        <TextBox x:Name="TextBox_CurrentLocation" Text="{Binding CurrentLocation.Name, Mode=TwoWay}" Style="{StaticResource TextBox_Main}" Margin="5,0,0,0" FontWeight="Medium" FontSize="12" Width="115" HorizontalAlignment="Left" TextChanged="TextBox_CurrentLocation_TextChanged"/>
                     </StackPanel>
                     <!--<Label Content="Grand Rapids, MI" Margin="15.7,7.25,0,0" FontWeight="Medium" FontSize="12" Width="140" HorizontalAlignment="Left"/>-->
 
@@ -449,16 +465,39 @@
                     <Border Style="{StaticResource Border_Main}" BorderThickness="1" Width="75">
                         <Label Content="ACTIONS: " Style="{StaticResource Label_Main}" FontWeight="Bold" Padding="2"/>
                     </Border>
-                    <ComboBox Height="30" Width="160" Margin="10,0,0,0" Opacity=".75"/>
+                    <ComboBox x:Name="ComboBox_Actions" 
+                              Height="30" Width="160" Margin="10,0,0,0" Opacity=".75"
+                              FontWeight="Medium"
+                              FontSize="14"             
+                              HorizontalAlignment="Center"
+                              VerticalContentAlignment="Center" SelectionChanged="ComboBox_Actions_SelectionChanged" />
                 </StackPanel>
             </Border>
 
             <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource Border_Main}" Margin="0,0,5,0" BorderThickness=".5,.5,.5,0">
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Border Style="{StaticResource Border_Main}" BorderThickness="1" Width="60">
-                        <Label Content="ASSETS: " Style="{StaticResource Label_Main}" FontWeight="Bold" Padding="2"/>
+                    <Border Style="{StaticResource Border_Main}" BorderThickness="1" Width="120">
+                        <Label Content="ASSETS OWNED: " Style="{StaticResource Label_Main}" FontWeight="Bold" Padding="2" />
                     </Border>
-                    <ComboBox Height="30" Width="160" Margin="10,0,0,0" Opacity=".75"/>
+                    <ComboBox
+                        x:Name="ComboBox_AssetTypes"
+                        Style="{StaticResource ComboBox_AssetTypes}"
+                        Margin="0" 
+                        Height="30"
+                        Width="120"
+                        Opacity=".75"
+                        FontWeight="Medium"
+                        FontSize="14"             
+                        HorizontalAlignment="Center"
+                        VerticalContentAlignment="Center" 
+                        SelectionChanged="ComboBox_AssetTypes_SelectionChanged"
+                        >
+                        <!--<ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>-->
+                    </ComboBox>
                 </StackPanel>
             </Border>
 
@@ -512,18 +551,150 @@
                 </Grid>
             </Border>
 
-            <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource Border_Main}" Margin="0,0,0,5" BorderThickness=".5,0,.5,.5">
+            <Border x:Name="Border_Actions" Grid.Row="1" Grid.Column="1" Style="{StaticResource Border_Main}" Margin="0,0,0,5" BorderThickness=".5,0,.5,.5">
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="3*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" Orientation="Vertical">
+                    <StackPanel x:Name="StackPanel_Actions_Example" Orientation="Vertical" Visibility="Hidden">
                         <Button Content="Action" Style="{StaticResource Button_Main}"/>
                         <Button Content="Related" Style="{StaticResource Button_Main}"/>
                         <Button Content="Buttons" Style="{StaticResource Button_Main}"/>
                         <Button Content="Here" Style="{StaticResource Button_Main}"/>
+                    </StackPanel>
+
+                    <StackPanel x:Name="StackPanel_Actions_Assets" Orientation="Vertical" HorizontalAlignment="Center" Margin="0" Visibility="Hidden">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,5">
+                            <Label Content="Asset Types:" Style="{StaticResource Label_Main}" Margin="2"/>
+                            <ComboBox
+                                x:Name="ComboBox_LocationAssetTypes"
+                                Style="{StaticResource ComboBox_AssetTypes}"
+                                Margin="0" 
+                                Height="30"
+                                Width="120"
+                                Opacity=".75"
+                                FontWeight="Medium"
+                                FontSize="14"             
+                                HorizontalAlignment="Center"
+                                VerticalContentAlignment="Center" SelectionChanged="ComboBox_LocationAssetTypes_SelectionChanged" 
+                                >
+                                        <!--<ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Content="{Binding Name}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>-->
+                            </ComboBox>
+                        </StackPanel>
+                        
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Asset Name:" Style="{StaticResource Label_Main}" Margin="2,0,0,0" Width="90"/>
+                            <ComboBox
+                                x:Name="ComboBox_LocationAssetName"
+                                Style="{StaticResource ComboBox_AssetTypes}"
+                                SelectedItem=""
+                                Margin="0,0,0,0" 
+                                Height="30"
+                                Width="160"
+                                Opacity=".75"
+                                FontWeight="Medium"
+                                FontSize="12"             
+                                HorizontalAlignment="Center" SelectionChanged="ComboBox_LocationAssetName_SelectionChanged"
+                                >
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Content="{Binding Name}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                            <Label Content="Asset Price:" Style="{StaticResource Label_Main}"/>
+                            <TextBox x:Name="TextBox_Actions_Assets_Price" Style="{StaticResource TextBox_Main}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5">
+                            <Button x:Name="Button_Actions_Assets_SeeDetails" Content="See Details" Style="{StaticResource Button_Main}" Click="Button_Actions_Assets_SeeDetails_Click"/>
+                            <Button x:Name="Button_Actions_Assets_Buy" Content="Buy" Style="{StaticResource Button_Main}" Click="Button_Actions_Assets_Buy_Click"/>
+                        </StackPanel>
+
+
+                    </StackPanel>
+
+                    <StackPanel x:Name="StackPanel_Actions_Debt" Orientation="Vertical" HorizontalAlignment="Center" Margin="0" Visibility="Visible">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
+                            <Label Content="Loans Paid In:" Style="{StaticResource Label_Main}" HorizontalAlignment="Center"/>
+                            <TextBox x:Name="TextBox_Actions_Debt_Years" Style="{StaticResource TextBox_Main}" Width="30" HorizontalContentAlignment="Center" Padding="1"/>
+                            <Label Content="year(s)" Style="{StaticResource Label_Main}"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0">
+                            <Label Content="25 years" Style="{StaticResource Label_Main}" FontSize="13"/>
+                            <Slider x:Name="Slider_Actions_Debt_LoanPayments"  Foreground="Green" Margin="2,4,2,0" Width="150"
+                                    Minimum="1" Maximum="25" Value="25"
+                                    IsDirectionReversed="True"
+                                    IsSnapToTickEnabled="True" TickFrequency="1" TickPlacement="Both" ValueChanged="Slider_Actions_Debt_LoanPayments_ValueChanged">
+                            
+                            </Slider>
+                            <Label Content="1 year" Style="{StaticResource Label_Main}" FontSize="13"/>
+                        </StackPanel>
+                        <!--<Label x:Name="Label_Action_Debt_Factor" Style="{StaticResource Label_Main}"/>-->
+                        <Grid Margin="0,5,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Row="0" Grid.Column="0" Content="Original Debt:" Style="{StaticResource Label_Main}" FontSize="12" HorizontalAlignment="Right" Margin="0"/>
+                            <TextBox x:Name="TextBox_Actions_Debt_OriginalDebt" Grid.Row="0" Grid.Column="1" Text="{Binding PlayerOriginalDebt}" Style="{StaticResource TextBox_Main}" Width="70" Height="25" HorizontalAlignment="Left"/>
+
+                            <Label Grid.Row="1" Grid.Column="0" Content="Loan Weekly Payment:" Style="{StaticResource Label_Main}" FontSize="12" HorizontalAlignment="Right" Margin="0"/>
+                            <TextBox x:Name="TextBox_Actions_Debt_WeeklyPayment" Grid.Row="1" Grid.Column="1" Style="{StaticResource TextBox_Main}" Width="70" Height="25" HorizontalAlignment="Left"/>
+
+                            <Label Grid.Row="2" Grid.Column="0" Content="Remaining Debt:" Style="{StaticResource Label_Main}" FontSize="12" HorizontalAlignment="Right" Margin="0"/>
+                            <TextBox x:Name="TextBox_Actions_Debt_RemainingDebt" Grid.Row="2" Grid.Column="1" Text="{Binding Player.Debt}" Style="{StaticResource TextBox_Main}" Width="70" Height="25" HorizontalAlignment="Left"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel x:Name="StackPanel_Actions_Loans" Orientation="Vertical" HorizontalAlignment="Center" Margin="5" Visibility="Hidden">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Label Content="Amount:" Style="{StaticResource Label_Main}"/>
+                            <TextBox x:Name="TextBox_Actions_Loans_LoanAmount" Style="{StaticResource TextBox_Main}" IsReadOnly="False" Width="82" TextChanged="TextBox_Actions_Loans_LoanAmount_TextChanged" />
+                            <Label Content="Lifetime:" Style="{StaticResource Label_Main}"/>
+                            <TextBox x:Name="TextBox_Actions_Loans_LoanLifetime" Text="{Binding ElementName=Slider_Actions_Loans_LoanLifetime,Path=Value}" Style="{StaticResource TextBox_Main}" Width="35" TextChanged="TextBox_Actions_Loans_LoanLifetime_TextChanged"/>
+                        </StackPanel>
+                        
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="25 years" Style="{StaticResource Label_Main}" FontSize="13"/>
+                            <Slider x:Name="Slider_Actions_Loans_LoanLifetime"  Foreground="Green" Margin="2,4,2,0" Width="150"
+                                    Minimum="1" Maximum="25" Value="25"
+                                    IsDirectionReversed="True"
+                                    IsSnapToTickEnabled="True" TickFrequency="1" TickPlacement="Both">
+
+                            </Slider>
+                            <Label Content="1 year" Style="{StaticResource Label_Main}" FontSize="13" Margin="0,0,5,0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                            <Label Content="APR:" Style="{StaticResource Label_Main}"/>
+                            <TextBox Text="{Binding LoanTemplate.APR}" Style="{StaticResource TextBox_Main}" Width="35" Padding="2"/>
+                            <Label Content="Weekly Payment:" Style="{StaticResource Label_Main}"/>
+                            <TextBox x:Name="TextBox_Actions_Loans_WeeklyPayment" Style="{StaticResource TextBox_Main}" Width="50"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
+                            <Label Content="Total Loan Cost:" Style="{StaticResource Label_Main}"/>
+                            <TextBox x:Name="TextBox_Actions_Loans_TotalLoanCost" Style="{StaticResource TextBox_Main}" Width="70"/>
+                            <Button x:Name="Button_Actions_Loans_Apply" Content="Apply" Style="{StaticResource Button_Main}" Width="60" Margin="10,0,10,0" Click="Button_Actions_Loans_Apply_Click" />
+                        </StackPanel>
                     </StackPanel>
 
                     <Border Grid.Row="1" Style="{StaticResource Border_Main}" Margin="0">
@@ -538,8 +709,8 @@
                             </Border>
 
                             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                <Button Content="Start" Style="{StaticResource Button_Main}" Width="90"/>
-                                <Button Content="Pause" Style="{StaticResource Button_Main}" Width="90"/>
+                                <Button x:Name="Button_Time_Start" Content="Start" Style="{StaticResource Button_Main}" Width="90" Click="Button_Time_Start_Click"/>
+                                <Button x:Name="Button_Time_Pause" Content="Pause" Style="{StaticResource Button_Main}" Width="90" Click="Button_Time_Pause_Click"/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -556,32 +727,69 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" Orientation="Vertical">
-                        <Label Content="Asset Info:" Style="{StaticResource Label_Main}" Margin="0"/>
-                        <TextBox Style="{StaticResource TextBox_Main}" Height="85" Width="230"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Label Content="Asset Name:" Style="{StaticResource Label_Main}" Margin="0"/>
+                            <ComboBox
+                                x:Name="ComboBox_AssetName"
+                                Style="{StaticResource ComboBox_AssetTypes}"
+                                SelectedItem=""
+                                Margin="0,0,0,0" 
+                                Height="30"
+                                Width="160"
+                                Opacity=".75"
+                                FontWeight="Medium"
+                                FontSize="12"             
+                                HorizontalAlignment="Center" SelectionChanged="ComboBox_AssetName_SelectionChanged"
+                                >
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Content="{Binding Name}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Current Asset Value:" Style="{StaticResource Label_Main}"/>
+                            <TextBox x:Name="TextBox_AssetsOwned_CurrentValue" Style="{StaticResource TextBox_Main}" Width="112"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                            <Button x:Name="Button_AssetsOwned_SeeDetails" Content="See Details" Style="{StaticResource Button_Main}" Click="Button_AssetsOwned_SeeDetails_Click"/>
+                            <Button x:Name="Button_AssetsOwned_Sell" Content="Sell" Style="{StaticResource Button_Main}" Click="Button_AssetsOwned_Sell_Click"/>
+
+                        </StackPanel>
+
+                        <!--<TextBox x:Name="TextBox_AssetInfo" Style="{StaticResource TextBox_Main}" Height="75" Width="240" TextWrapping="Wrap" FontSize="11" ScrollViewer.VerticalScrollBarVisibility="Auto"/>-->
                     </StackPanel>
 
 
                     <Border Grid.Row="1" Style="{StaticResource Border_Main}" Margin="0">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                        <Grid>                     
+                            <Grid x:Name="Grid_YearsWeeksPassed">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                            <Label Grid.Row="0" Grid.Column="0" Content="Years Passed: " Style="{StaticResource Label_Main}" HorizontalAlignment="Right"/>
-                            <Label Grid.Row="1" Grid.Column="0" Content="Weeks Passed (This Year): " Style="{StaticResource Label_Main}" HorizontalAlignment="Right"/>
-                            <Label Grid.Row="2" Grid.Column="0" Content="Years To Retirement: " Style="{StaticResource Label_Main}" HorizontalAlignment="Right"/>
+                                <Label Grid.Row="0" Grid.Column="0" Content="Years Passed: " Style="{StaticResource Label_Main}" HorizontalAlignment="Right"/>
+                                <Label Grid.Row="1" Grid.Column="0" Content="Weeks Passed (This Year): " Style="{StaticResource Label_Main}" HorizontalAlignment="Right"/>
+                                <Label Grid.Row="2" Grid.Column="0" Content="Years To Retirement: " Style="{StaticResource Label_Main}" HorizontalAlignment="Right"/>
 
-                            <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource TextBox_Main}" Height="20" Width="50"/>
-                            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource TextBox_Main}" Height="20" Width="50"/>
-                            <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource TextBox_Main}" Height="20" Width="50"/>
+                                <TextBox x:Name="TextBox_YearsPassed" Grid.Row="0" Grid.Column="1" Text="{Binding YearsPassed}" Style="{StaticResource TextBox_Main}" Height="20" Width="50" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding GameTimeDisplay}" Style="{StaticResource TextBox_Main}" Height="20" Width="50" TextChanged="TextBox_TextChanged"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource TextBox_Main}" Height="20" Width="50"/>
 
-                        </Grid>
+                            </Grid>
+                            
+                            <Label x:Name="Label_YearsWeeksPassed_Paused" Content="Paused" Style="{StaticResource Label_Main}" FontSize="50" HorizontalAlignment="Center" FontWeight="Normal" Visibility="Hidden"/>
+                            
+                        </Grid>                        
                     </Border>
 
                 </Grid>
