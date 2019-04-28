@@ -86,19 +86,36 @@ namespace TBQuestGame.BusinessLayer
                 //
                 _player.Age = 18;
                 _player.Cash = 5000;
-                _player.happiness = Character.Happiness.VeryHigh;
+                _player.Happiness = 100;
                 _player.NetworkingPoints = 10;
-                _player.Wage = _player.Occupation.AvgSalary / 52; // Gives a weekly salary
+                _player.Salary = _player.Occupation.AvgSalary;
+                _player.Wage = _player.Salary / 52; // Gives a weekly salary
+                _player.WageWithAssets = _player.Wage; // No assets, wage is the same
                 _player.Debt = _player.Occupation.Debt;
-                _player.CostOfLiving = 125;
+                _player.Expenses = 230;
                 _player.PlayerGameItems = new System.Collections.ObjectModel.ObservableCollection<GameItem> { }; // prevents Player's items from being null
+                _player.HousingOption = Player.HousingOptions.Stay_With_Parents;
+                _player.WeeklyRent = 0;
+                _player.HouseHappiness = -1;
+                _player.CommutingOption = Player.CommutingOptions.Bicycle;
+                _player.CommutingCost = 0;
+                _player.CommutingHappiness = -.2;
 
             }
             else
             {
                 _player = GameData.PlayerData();
-                _player.Occupation = _allOccupations[3];
+                _player.Occupation = _allOccupations[3]; // default occupation: Cosmetologist
+                _player.Salary = _player.Occupation.AvgSalary;
+                _player.Wage = _player.Salary / 52; // Gives a weekly salary
+                _player.WageWithAssets = _player.Wage;
                 _player.Debt = _player.Occupation.Debt;
+                _player.HousingOption = Player.HousingOptions.Stay_With_Parents;
+                _player.WeeklyRent = 0;
+                _player.HouseHappiness = -1;
+                _player.CommutingOption = Player.CommutingOptions.Bicycle;
+                _player.CommutingCost = 0;
+                _player.CommutingHappiness = -.2;
             }
 
             //_currentLocation = _gameMap.CurrentLocation;

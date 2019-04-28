@@ -20,7 +20,6 @@ namespace WageSlave.Models.GameObjects
         private double _appreciationMax;
         private double _appreciationMin;
         private int _familiesAllowed;
-        private int _happinessImpact;
         private int _milesFromTown;
         //private Location _locale;
 
@@ -35,12 +34,6 @@ namespace WageSlave.Models.GameObjects
         {
             get { return _milesFromTown; }
             set { _milesFromTown = value; }
-        }
-
-        public int HappinessImpact
-        {
-            get { return _happinessImpact; }
-            set { _happinessImpact = value; }
         }
 
         public int FamiliesAllowed

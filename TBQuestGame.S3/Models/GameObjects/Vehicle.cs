@@ -18,7 +18,6 @@ namespace WageSlave.Models.GameObjects
         private double _depreciationRate;
         private MaintenanceCosts _maintenanceCost;
         private bool _driveDaily;
-        private int _happinessImpact;
         private string _description;
 
 
@@ -28,27 +27,17 @@ namespace WageSlave.Models.GameObjects
             set { _description = value; }
         }
 
-        public int HappinessImpact
-        {
-            get { return _happinessImpact; }
-            set { _happinessImpact = value; }
-        }
-
-
         public bool DriveDaily
         {
             get { return _driveDaily; }
             set { _driveDaily = value; }
         }
 
-
         public MaintenanceCosts MaintenanceCost
         {
             get { return _maintenanceCost; }
             set { _maintenanceCost = value; }
         }
-
-
 
         public double DepreciationRate
         {

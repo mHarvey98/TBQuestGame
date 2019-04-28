@@ -11,14 +11,6 @@ namespace WageSlave.Models.GameObjects
         private string _description;
         private double _appreciationMax;
         private double _appreciationMin;
-        private int _happinessImpact;
-
-
-        public int HappinessImpact
-        {
-            get { return _happinessImpact; }
-            set { _happinessImpact = value; }
-        }
 
         public double AppreciationMin
         {

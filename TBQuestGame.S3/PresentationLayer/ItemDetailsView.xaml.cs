@@ -89,7 +89,7 @@ namespace WageSlave.PresentationLayer
                     TextBox_ItemDetailView_RealEstate_Appreciation.Text = ((realEastate.AppreciationMax + realEastate.AppreciationMin) / 2).ToString();
                     TextBox_ItemDetailView_RealEstate_FamiliesAllowed.Text = realEastate.FamiliesAllowed.ToString();
                     TextBox_ItemDetailView_RealEstate_MilesFromTown.Text = realEastate.MilesFromTown.ToString();
-                    TextBox_ItemDetailView_RealEstate_HappinessImpact.Text = realEastate.HappinessImpact.ToString();
+                    TextBox_ItemDetailView_RealEstate_HappinessImpact.Text = realEastate.HappinessFactor.ToString();
                     TextBox_ItemDetailView_RealEstate_Price.Text = realEastate.Price.ToString();
                     TextBox_ItemDetailView_RealEstate_Value.Text = realEastate.Value.ToString();
                     TextBox_ItemDetailView_RealEstate_Description.Text = realEastate.Description;

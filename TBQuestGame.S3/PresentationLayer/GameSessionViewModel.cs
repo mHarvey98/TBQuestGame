@@ -10,6 +10,8 @@ using System.ComponentModel;
 using WageSlave;
 using System.Windows.Threading;
 using WageSlave.Models.GameObjects;
+using System.Windows.Media;
+using System.Windows;
 
 namespace TBQuestGame.PresentationLayer
 {
@@ -31,6 +33,13 @@ namespace TBQuestGame.PresentationLayer
         private double _playerOriginalDebt;
         private double _weeklyPayment;
         private Loan _loanTemplate;
+        private string _costOfLivingString;
+        private string _wageString;
+        private bool _hasWarnedHappiness;
+        private string _happinessString;
+        private bool _playerKeepPlaying;
+
+
 
         // Time-Related Fields
         private DateTime _gameStartTime;
@@ -41,6 +50,45 @@ namespace TBQuestGame.PresentationLayer
 
         
         // Properties
+        public bool PlayerKeepPlaying
+        {
+            get { return _playerKeepPlaying; }
+            set
+            {
+                _playerKeepPlaying = value;
+                OnPropertyChanged(nameof(PlayerKeepPlaying));
+            }
+        }
+
+        public string HappinessString
+        {
+            get { return _happinessString; }
+            set
+            {
+                _happinessString = value;
+                OnPropertyChanged(nameof(HappinessString));
+            }
+        }
+
+        public bool HasWarnedHappiness
+        {
+            get { return _hasWarnedHappiness; }
+            set { _hasWarnedHappiness = value; }
+        }
+
+        public string WageString
+        {
+            get { return _wageString; }
+            set { _wageString = value; }
+        }
+
+
+        public string CostOfLivingString
+        {
+            get { return _costOfLivingString; }
+            set { _costOfLivingString = value; }
+        }
+
         public Loan LoanTemplate
         {
             get { return _loanTemplate; }
@@ -194,6 +242,9 @@ namespace TBQuestGame.PresentationLayer
             _allOccupations = allOccupations;
             _player.PreviousCash = _player.Cash;
             _loanTemplate = loanTemplate;
+            _hasWarnedHappiness = false;
+            _happinessString = Player.PlayerGetHappinessStats(_player, _weeklyPayment);
+            _playerKeepPlaying = false;
 
             //UpdatePlayerWeeklyPayment();
 
@@ -232,7 +283,7 @@ namespace TBQuestGame.PresentationLayer
                     // update cash
                     //
                     _player.PreviousCash = _player.Cash;
-                    _player.Cash += _selectedLocation.ModifyCash;
+                    _player.Cash -= _selectedLocation.ModifyCash;
 
                     // First attempt at removing accessible locations
                     UpdateAccessibleLocation();
@@ -278,13 +329,16 @@ namespace TBQuestGame.PresentationLayer
                 CurrentLocation.LocationItems.Remove(CurrentLocationGameItem);
                 OnPropertyChanged("CurrentLocation");
             }
+
+            UpdatePlayerWage(_player.Wage / _player.Occupation.HourlyRate);
         }
 
-        public void PlayerSellAsset()
+        public void PlayerSellAsset() //... currently an exploit exists that you can sell an appreciating item at it's 'value' and buy it at it's 'price', which is lower. Price should be value
         {
             if (CurrentGameItem != null)
             {
                 var itemType = CurrentGameItem.GetType(); // returns the CurrentGameItem's object type
+                CurrentGameItem.Price = CurrentGameItem.Value; // Item keeps its value as it's price, once sold (takes care of buying and selling appreciating item exploit)
 
                 if (itemType == typeof(Vehicle) | itemType == typeof(OtherItem)) // item can be sold in any location
                 {
@@ -322,51 +376,133 @@ namespace TBQuestGame.PresentationLayer
                                 location.LocationItems.Add(CurrentGameItem);
                                 Player.Cash += CurrentGameItem.Value;
                                 Player.PlayerGameItems.Remove(CurrentGameItem);
-                                UpdateAccessibleLocation(); // todo ... this might not work, need to update the location "CurrentGameItem" was added to
+                                UpdateAccessibleLocation();
                             }
                         }
                         catch (Exception)
                         { }
                     }
                 }
+
+
+
+                UpdatePlayerWage(_player.Wage / _player.Occupation.HourlyRate);
             }
-
-
-
         }
 
         public void CaculatePlayerDebt(double debtFactor)
         {
             _player.DebtPayment = 0;
-            _player.DebtPayment = _playerOriginalDebt* debtFactor;
+            _player.DebtPayment = _player.Debt* debtFactor;
 
             UpdatePlayerWeeklyPayment();
         }
 
-        public void UpdatePlayerWeeklyPayment() // todo ... Stop debt payments once debt is paid
+        public void UpdatePlayerWeeklyPayment()
         {
-            int loanPayment = 0;
+            double loanPayment = 0;
+            int loansTotal = 0;
 
-            if (_player.PlayerLoans != null) // Add together all of the player's loan payments
+
+            if (_player.PlayerLoans != null && _player.PlayerLoans.Count != 0) // Add together all of the player's loan payments
             {
                 foreach (Loan loan in _player.PlayerLoans)
                 {
-                    loanPayment += loan.LoanWeeklyPayment;
+                    if (loan.RemainingLoanBalance > 0)
+                    {
+                        loanPayment += loan.LoanWeeklyPayment; // Adds up all current loan payments
+                        loan.RemainingLoanBalance -= loan.LoanWeeklyPayment; // Lowers the loan balance by the set weekly payment, each week.
+                        loansTotal += loan.RemainingLoanBalance; //adds all loan totals together, to give a total loan debt
+                    }
                 }
             }
 
-            _weeklyPayment = Math.Truncate(_player.DebtPayment + _player.CostOfLiving + loanPayment); // Add up all weekly expenses
+            _weeklyPayment = Math.Truncate(_player.DebtPayment + _player.Expenses + loanPayment + _player.WeeklyRent + _player.CommutingCost); // todo ... Make "debt" from college another loan in the loan list.
+            _costOfLivingString = $"Student Loans Payment: {Math.Round(_player.DebtPayment).ToString()}, Remaining: {_player.Debt} \n" +
+                $"Personal Loans Payment: {Math.Round(loanPayment).ToString()}, Total Remaining: {loansTotal} \n" +
+                $"Rent: {_player.WeeklyRent} \n" +
+                $"Commuting: {_player.CommutingCost} \n" +
+                $"Other Expenses: {_player.Expenses}";
+            OnPropertyChanged("CostOfLivingString");
             OnPropertyChanged("WeeklyPayment");            
         }
 
         public void UpdatePlayerWeeklyVariables()
         {
             _player.PreviousCash = _player.Cash;
-            _player.Cash += _player.Wage;
-            _player.Cash -= (int)_weeklyPayment;            
+            _player.Cash += _player.WageWithAssets;
+            _player.Cash -= (int)_weeklyPayment;
+            _player.Happiness += Player.PlayerHappinessUpdate(_player, _weeklyPayment);
+            _happinessString = Player.PlayerGetHappinessStats(_player, _weeklyPayment); // separate method for returning individual happiness stats as a string
+            OnPropertyChanged(nameof(HappinessString));
+            _player.Happiness = Math.Round(_player.Happiness, 2); // Rounds Happiness to 2 decimal places
+
+            if (_player.PlayerLoans != null && _player.PlayerLoans.Count != 0) // Add together all of the player's loan payments
+            {
+                try
+                {
+                    foreach (Loan loan in _player.PlayerLoans)
+                    {
+                        if (loan.RemainingLoanBalance <= 0)
+                        {
+                            Player.PlayerRemoveLoan(_player, loan);
+                        }
+                    }
+                }
+                catch (InvalidOperationException) { }
+                catch (Exception) { }
+
+            }
             OnPropertyChanged(nameof(Player));
+            if ((Player.Debt - (int)_player.DebtPayment) <= 0)
+            {
+                Player.Debt = 0;
+            }
+            if (Player.Debt == 0)
+            {
+                CaculatePlayerDebt(1.0);
+            }
             Player.Debt -= (int)_player.DebtPayment;
             OnPropertyChanged(nameof(PlayerOriginalDebt));
+
+            if (_player.Happiness > 50)
+            {
+                _hasWarnedHappiness = false;
+            }
+
+            if (_player.Happiness < 20 && _hasWarnedHappiness == false)
+            {
+                MessageBox.Show("You are becoming depressed. If you allow your 'Happiness' to hit ZERO, you will commit suicide and the game will end. Try working less or finding a better house to live in.", $"Happiness: {_player.Happiness}", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _hasWarnedHappiness = true;
+            }
+
+            if (_player.Happiness <= 0)
+            {
+                MessageBox.Show("Your Happiness has hit ZERO. You allowed yourself to become depressed to the point of suicide. \n\nGAME OVER", "GAME OVER", MessageBoxButton.OK, MessageBoxImage.Error);
+                ExitApplication();
+            }
+
+
+            if (_playerKeepPlaying == false) // after player has been asked if they want to keep playing, they are not asked again
+            {
+                if ((_player.WageWithAssets - _player.Wage) > (WeeklyPayment + 500) && _player.PlayerLoans.Count == 0 && _player.Debt == 0 && _player.Happiness > 80) // if the player's weekly asset income is greater than weeklyPayment+500, and they have no loans, and Happiness is over 80, show message box
+                {
+                    // Tells player they won, and their score. Asks if they want to continue playing anyway
+                    MessageBoxResult result = MessageBox.Show($"The income from your assets has surpassed your weekly expenses by 500! You are now able to safely retire! \n\nCongratulations, you've beat the game! \n\nYour age: {_player.Age} \nYou retired in {_player.Age - 18} years \n\n Would you like to continue playing?", "YOU WIN!", MessageBoxButton.YesNo, MessageBoxImage.None);
+                    switch (result)
+                    {
+                        case MessageBoxResult.Yes:
+                            _playerKeepPlaying = true;
+                            break;
+                        case MessageBoxResult.No:
+                            ExitApplication();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
         }
 
         public int CalculateLoanWeeklyPayment(int lengthInYears, int loanAmount) // todo ... could factor in "Networking Points" as credit score
@@ -418,6 +554,77 @@ namespace TBQuestGame.PresentationLayer
             OnPropertyChanged(nameof(Player));
         }
 
+        public Brush ConvertToBrush(double Happiness) // Generates a color from Red to Green, based on Happiness (0 - 100)
+        {
+            Brush newBrush = null;
+            int r, g, b;
+
+            if (Happiness < 1)
+            {
+                Happiness = 1;
+            }
+
+            r = (int)((100 / Happiness) * 2.55); // Red value goes up as Happiness goes down
+
+            g = (int)(Happiness * 1.94);
+
+            b = (int)(Happiness * .77);
+
+            newBrush = new SolidColorBrush(Color.FromArgb(255, (byte)r, (byte)g, (byte)b));
+
+            return newBrush;
+        }
+
+        public void UpdatePlayerWage(int hours)
+        {
+            // Updates player's wage and wageWithAssets
+            Player.PlayerUpdateWage(_player, hours);            
+            OnPropertyChanged(nameof(Player));
+            //updates ToolTip for "Wage" label
+            _wageString = $"Working Weekly Wage: {_player.Wage} \n" +
+                $"Assets Weekly Wage: {_player.WageWithAssets - _player.Wage} \n" +
+                $"Current Overall Salary: {_player.WageWithAssets * 52}";
+            OnPropertyChanged(nameof(WageString));
+        }
+
+        public void ExitApplication()
+        {
+            Environment.Exit(0);
+        }
+
+        public void UpdatePlayerHousing(Player.HousingOptions housingOption, int rent)
+        {
+            Player.PlayerUpdateHousing(housingOption, rent, _player);
+
+            UpdatePlayerWeeklyPayment();
+            _happinessString = Player.PlayerGetHappinessStats(_player, _weeklyPayment); // separate method for returning individual happiness stats as a string
+            OnPropertyChanged(nameof(HappinessString));
+
+            OnPropertyChanged(nameof(Player));
+        }
+
+        public void UpdatePlayerExpenses(int foodCost, int spendingBudget)
+        {
+            Player.PlayerUpdateExpenses(foodCost, spendingBudget, _player);
+
+            UpdatePlayerWeeklyPayment();
+            _happinessString = Player.PlayerGetHappinessStats(_player, _weeklyPayment);
+            OnPropertyChanged(nameof(HappinessString));
+
+            OnPropertyChanged(nameof(Player));
+        }
+
+        public void UpdatePlayerCommuting(Player.CommutingOptions commutingOption)
+        {
+            Player.PlayerUpdateCommuting(commutingOption, _player);
+
+            UpdatePlayerWeeklyPayment();
+            _happinessString = Player.PlayerGetHappinessStats(_player, _weeklyPayment);
+            OnPropertyChanged(nameof(HappinessString));
+
+            OnPropertyChanged(nameof(Player));
+        }
+
 
 
         // Time-Related Methods
@@ -461,6 +668,7 @@ namespace TBQuestGame.PresentationLayer
                 _gameTime += TimeSpan.FromSeconds(1);
                 GameTimeDisplay = _gameTime.ToString(@"ss");
 
+                UpdatePlayerWeeklyPayment(); // Called here to check remaining balance of loans, and remove if loans are paid.
                 UpdatePlayerWeeklyVariables();
             }
         }

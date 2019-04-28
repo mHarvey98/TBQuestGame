@@ -10,12 +10,20 @@ namespace TBQuestGame.Models
     public abstract class Character : ObservableObject
     {
         // Fields
-        public enum Happiness { VeryHigh, High, Moderate, Low, VeryLow}
+        //public enum Happiness { VeryHigh, High, Moderate, Low, VeryLow}   Happiness will now be an integer
 
         private int _id;
         private string _name;
         private int _locationId;
-        private Happiness _happiness;
+        //private Happiness _happiness;
+        private double _happiness;
+
+        public double Happiness
+        {
+            get { return _happiness; }
+            set { _happiness = value; }
+        }
+
 
         // Properties
         public int LocationId
@@ -40,15 +48,15 @@ namespace TBQuestGame.Models
             set { _id = value; }
         }
 
-        public Happiness happiness
-        {
-            get { return _happiness; }
-            set
-            {
-                _happiness = value;
-                OnPropertyChanged(nameof(happiness));
-            }
-        }
+        //public Happiness happiness
+        //{
+        //    get { return _happiness; }
+        //    set
+        //    {
+        //        _happiness = value;
+        //        OnPropertyChanged(nameof(happiness));
+        //    }
+        //}
 
 
         //Methods

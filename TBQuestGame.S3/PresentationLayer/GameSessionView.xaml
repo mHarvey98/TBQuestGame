@@ -407,18 +407,23 @@
                         </StackPanel>
 
                         <StackPanel Grid.Row="2" Orientation="Horizontal">
-                            <Label Content="Happiness:" Style="{StaticResource Label_Main}"/>
-                            <TextBox Text="{Binding Player.happiness}" Style="{StaticResource TextBox_Main}" Width="73"/>
-                            <Label Content="Wage (Per Week):" Style="{StaticResource Label_Main}"/>
-                            <TextBox Text="{Binding Player.Wage}" Style="{StaticResource TextBox_Main}"/>
+                            <Label Content="Happiness:" Style="{StaticResource Label_Main}" ToolTip="{Binding HappinessString}" ToolTipService.ShowDuration="300000"/>
+                            <!--<TextBox Text="{Binding Player.Happiness}" Style="{StaticResource TextBox_Main}" Width="73"/>-->
+                            <Border BorderThickness=".75" BorderBrush="DarkGray" Width="80" Height="30" Padding=".5">
+                                <Grid Opacity=".9">
+                                    <ProgressBar x:Name="ProgressBar_Happiness2" Height="29" Width="75" Value="{Binding Player.Happiness}" Foreground="Red" Minimum="0" Maximum="100" ValueChanged="ProgressBar_Happiness_ValueChanged" Opacity="1"/>
+                                    <ProgressBar x:Name="ProgressBar_Happiness1" Height="29" Width="75" Value="{Binding Player.Happiness}" Foreground="Green" Minimum="0" Maximum="100" ValueChanged="ProgressBar_Happiness_ValueChanged" />
+                                    <Label Content="{Binding Player.Happiness}" Style="{StaticResource Label_Main}" HorizontalAlignment="Center"/>                                    
+                                </Grid>                                    
+                            </Border>
+                            <Label Content="Wage (Per Week):" Style="{StaticResource Label_Main}" ToolTip="{Binding WageString}" ToolTipService.ShowDuration="300000"/>
+                            <TextBox Text="{Binding Player.WageWithAssets}" Style="{StaticResource TextBox_Main}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Row="3" Orientation="Horizontal">
-                            <Label Content="Cost of Living (Per Week):" Style="{StaticResource Label_Main}"/>
+                            <Label Content="Cost of Living (Per Week):" Style="{StaticResource Label_Main}" ToolTip="{Binding CostOfLivingString}" ToolTipService.ShowDuration="300000"/>
                             <TextBox Text="{Binding WeeklyPayment, Mode=TwoWay}" Style="{StaticResource TextBox_Main}"/>
                         </StackPanel>
-
-
                     </Grid>
                 </Border>
             </Grid>
@@ -623,9 +628,217 @@
 
                     </StackPanel>
 
-                    <StackPanel x:Name="StackPanel_Actions_Debt" Orientation="Vertical" HorizontalAlignment="Center" Margin="0" Visibility="Visible">
+                    <StackPanel x:Name="StackPanel_Actions_Housing" Orientation="Vertical" HorizontalAlignment="Center" Margin="0" Visibility="Hidden">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Label Content="Options:" Style="{StaticResource Label_Main}"/>
+                            <ComboBox
+                                x:Name="ComboBox_Housing_Options"
+                                Style="{StaticResource ComboBox_AssetTypes}"
+                                Margin="0" 
+                                Height="30"
+                                Width="150"
+                                Opacity=".75"
+                                FontWeight="Medium"
+                                FontSize="14"             
+                                HorizontalAlignment="Center"
+                                VerticalContentAlignment="Center" SelectionChanged="ComboBox_Housing_Options_SelectionChanged"
+                                >
+                                <!--<ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Content="{Binding Name}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>-->
+                            </ComboBox>
+                        </StackPanel>
+                        <Grid>
+                            <StackPanel x:Name="StackPanel_Actions_Housing_Rent" Orientation="Vertical" HorizontalAlignment="Center" Margin="10" Visibility="Hidden">
+                                <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Center">
+                                    <Label Content="Monthly Rent:" Style="{StaticResource Label_Main}"/>
+                                    <TextBox Text="{Binding ElementName=Slider_Actions_Housing_Rent, Path=Value}" Style="{StaticResource TextBox_Main}" Width="45"/>
+                                    <Label Content="Weekly:" Style="{StaticResource Label_Main}"/>
+                                    <TextBox x:Name="Textbox_Actions_Housing_Rent_WeeklyCost" Style="{StaticResource TextBox_Main}" Width="45"/>
+                                </StackPanel>
+                                
+                                <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Center">
+                                    <Label Content="$300" Style="{StaticResource Label_Main}" FontSize="13"/>
+                                    <Slider x:Name="Slider_Actions_Housing_Rent"  Foreground="Green" Margin="2,4,2,0" Width="150"
+                                    Minimum="300" Maximum="2000" Value="1150"
+                                    IsDirectionReversed="False"
+                                    IsSnapToTickEnabled="True" TickFrequency="50" ValueChanged="Slider_Actions_Housing_Rent_ValueChanged">
+
+                                    </Slider>
+                                    <Label Content="$2000" Style="{StaticResource Label_Main}" FontSize="13"/>
+                                </StackPanel>
+
+                                <!--<Button x:Name="Button_Actions_Housing_RentApply" Content="Apply" Style="{StaticResource Button_Main}" Margin="0,15,0,0" Click="Button_Actions_Housing_RentApply_Click"/>-->
+                            </StackPanel>
+                            
+                            <StackPanel x:Name="StackPanel_Actions_Housing_OwnHouse" Orientation="Vertical" HorizontalAlignment="Center" Margin="5" Visibility="Hidden">
+                                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                    <Label Content="House:" Style="{StaticResource Label_Main}"/>
+                                    <ComboBox
+                                        x:Name="ComboBox_Actions_Housing_OwnHouse"
+                                        Style="{StaticResource ComboBox_AssetTypes}"
+                                        SelectedItem=""
+                                        Margin="0,0,0,0" 
+                                        Height="30"
+                                        Width="160"
+                                        Opacity=".75"
+                                        FontWeight="Medium"
+                                        FontSize="12"             
+                                        HorizontalAlignment="Center"
+                                        >
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Label Content="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+                            </StackPanel>
+                            
+                            <StackPanel x:Name="StackPanel_Actions_Housing_StayWithParents" Orientation="Vertical" HorizontalAlignment="Center" Margin="0" Visibility="Visible">
+                                <TextBlock FontSize="15" FontWeight="Medium"  Margin="0,5,0,0" Text="Living with your parents is free, however, there is a significant negative happiness factor attached (-1 every week)." TextWrapping="Wrap" Width="220"/>
+                            </StackPanel>
+                            
+                            
+                        </Grid>
+                        <Button x:Name="Button_Actions_Housing_RentApply" Content="Move" Style="{StaticResource Button_Main}" Margin="5" Click="Button_Actions_Housing_RentApply_Click"/>
+                    </StackPanel>
+                    
+                    <StackPanel x:Name="StackPanel_Actions_Commuting" Orientation="Vertical" HorizontalAlignment="Center" Margin="0" Visibility="Visible">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Label Content="Options:" Style="{StaticResource Label_Main}"/>
+                            <ComboBox
+                                x:Name="ComboBox_Commuting_Options"
+                                Style="{StaticResource ComboBox_AssetTypes}"
+                                Margin="0" 
+                                Height="30"
+                                Width="150"
+                                Opacity=".75"
+                                FontWeight="Medium"
+                                FontSize="14"             
+                                HorizontalAlignment="Center"
+                                VerticalContentAlignment="Center" SelectionChanged="ComboBox_Commuting_Options_SelectionChanged" 
+                                >
+                            </ComboBox>
+                        </StackPanel>
+                        <Grid>
+                            <StackPanel x:Name="StackPanel_Actions_Commuting_Bus" Orientation="Vertical" HorizontalAlignment="Center" Margin="5" Visibility="Hidden">
+                                <TextBlock FontSize="13" FontWeight="Medium"  Margin="0,5,0,0" Text="Taking the bus costs a small amount, and takes less time than bicycling. However, taking the bus has a negative impact on your happiness." TextWrapping="Wrap" Width="220"/>
+
+                            </StackPanel>
+
+                            <StackPanel x:Name="StackPanel_Actions_Commuting_Cars" Orientation="Vertical" HorizontalAlignment="Center" Margin="5" Visibility="Visible">
+                                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                    <Label Content="Car:" Style="{StaticResource Label_Main}"/>
+                                    <ComboBox
+                                        x:Name="ComboBox_Actions_Commuting_Cars"
+                                        Style="{StaticResource ComboBox_AssetTypes}"
+                                        SelectedItem=""
+                                        Margin="0,0,0,0" 
+                                        Height="30"
+                                        Width="160"
+                                        Opacity=".75"
+                                        FontWeight="Medium"
+                                        FontSize="12"             
+                                        HorizontalAlignment="Center"
+                                        >
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Label Content="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+                                <TextBlock FontSize="12" FontWeight="Medium"  Margin="0,5,0,0" Text="A car takes the least time (+ happiness), but you also have to buy a car to use." TextWrapping="Wrap" Width="220"/>
+                            </StackPanel>
+
+                            <StackPanel x:Name="StackPanel_Actions_Commuting_Bicycle" Orientation="Vertical" HorizontalAlignment="Center" Margin="0" Visibility="Hidden">
+                                <TextBlock FontSize="13" FontWeight="Medium"  Margin="0,5,0,0" Text="Bicycling is free, and while it is good for your health, your happiness will slightly decrease due to the extra time spent commuting." TextWrapping="Wrap" Width="220"/>
+                            </StackPanel>
+
+
+                        </Grid>
+                        <Button x:Name="Button_Actions_Commuting_ApplyChanges" Width="130" Content="Set Commuting" Style="{StaticResource Button_Main}" Margin="5" Click="Button_Actions_Commuting_ApplyChanges_Click"/>
+
+                    </StackPanel>
+                    
+                    <StackPanel x:Name="StackPanel_Actions_Work" Orientation="Vertical" HorizontalAlignment="Center" Margin="0" Visibility="Hidden">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
-                            <Label Content="Loans Paid In:" Style="{StaticResource Label_Main}" HorizontalAlignment="Center"/>
+                            <Label Content="Hours Worked Per Week:" Style="{StaticResource Label_Main}" HorizontalAlignment="Center"/>
+                            <TextBox x:Name="TextBox_Actions_Work" Text="{Binding ElementName=Slider_Actions_WorkHours, Path=Value}" Style="{StaticResource TextBox_Main}" Width="30" HorizontalContentAlignment="Center" Padding="1"/>
+                            <Label Content="hours" Style="{StaticResource Label_Main}"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0">
+                            <Label Content="0 hours" Style="{StaticResource Label_Main}" FontSize="13"/>
+                            <Slider x:Name="Slider_Actions_WorkHours"  Foreground="Green" Margin="2,4,2,0" Width="130"
+                                    Minimum="0" Maximum="80" Value="40"
+                                    IsDirectionReversed="False"
+                                    IsSnapToTickEnabled="True" TickFrequency="1" ValueChanged="Slider_Actions_WorkHours_ValueChanged">
+
+                            </Slider>
+                            <Label Content="80 hours" Style="{StaticResource Label_Main}" FontSize="13"/>
+                        </StackPanel>
+                        <!--<Label x:Name="Label_Action_Debt_Factor" Style="{StaticResource Label_Main}"/>-->
+                        <Grid Margin="0,5,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Row="0" Grid.Column="0" Content="Hourly Rate:" Style="{StaticResource Label_Main}" FontSize="12" HorizontalAlignment="Right" Margin="0"/>
+                            <TextBox x:Name="TextBox_Actions_Work1" Grid.Row="0" Grid.Column="1" Text="{Binding Player.Occupation.HourlyRate}" Style="{StaticResource TextBox_Main}" Width="70" Height="25" HorizontalAlignment="Left"/>
+
+                            <Label Grid.Row="1" Grid.Column="0" Content="Weekly Wage:" Style="{StaticResource Label_Main}" FontSize="12" HorizontalAlignment="Right" Margin="0"/>
+                            <TextBox x:Name="TextBox_Actions_Work2" Grid.Row="1" Grid.Column="1" Text="{Binding Player.Wage}" Style="{StaticResource TextBox_Main}" Width="70" Height="25" HorizontalAlignment="Left"/>
+
+                            <Label Grid.Row="2" Grid.Column="0" Content="Yearly Salary:" Style="{StaticResource Label_Main}" FontSize="12" HorizontalAlignment="Right" Margin="0"/>
+                            <TextBox x:Name="TextBox_Actions_Work3" Grid.Row="2" Grid.Column="1" Text="{Binding Player.Salary}" Style="{StaticResource TextBox_Main}" Width="70" Height="25" HorizontalAlignment="Left"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel x:Name="StackPanel_Actions_Expenses" Orientation="Vertical" HorizontalAlignment="Center" Margin="0" Visibility="Hidden">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
+                            <Label Content="Food Cost per week:" Style="{StaticResource Label_Main}" HorizontalAlignment="Center"/>
+                            <TextBox x:Name="TextBox_Actions_Expenses_FoodCost" Text="{Binding ElementName=Slider_Actions_Expenses_Food, Path=Value}" Style="{StaticResource TextBox_Main}" Width="30" HorizontalContentAlignment="Center" Padding="1"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0">
+                            <Label Content="$10" Style="{StaticResource Label_Main}" FontSize="13"/>
+                            <Slider x:Name="Slider_Actions_Expenses_Food"  Foreground="Green" Margin="2,4,2,0" Width="150"
+                                    Minimum="10" Maximum="150" Value="80"
+                                    IsDirectionReversed="False"
+                                    IsSnapToTickEnabled="True" TickFrequency="10" TickPlacement="Both" ValueChanged="Slider_Actions_Expenses_Food_ValueChanged">
+                            </Slider>
+                            <Label Content="$150" Style="{StaticResource Label_Main}" FontSize="13"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                            <Label Content="Misc. Spending Budget:" Style="{StaticResource Label_Main}" HorizontalAlignment="Center"/>
+                            <TextBox x:Name="TextBox_Actions_Expenses_SpendingBudget" Text="{Binding ElementName=Slider_Actions_Expenses_SpendingBudget, Path=Value}" Style="{StaticResource TextBox_Main}" Width="30" HorizontalContentAlignment="Center" Padding="1"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0">
+                            <Label Content="$0" Style="{StaticResource Label_Main}" FontSize="13"/>
+                            <Slider x:Name="Slider_Actions_Expenses_SpendingBudget"  Foreground="Green" Margin="2,4,2,0" Width="150"
+                                    Minimum="0" Maximum="300" Value="150"
+                                    IsDirectionReversed="False"
+                                    IsSnapToTickEnabled="True" TickFrequency="30" TickPlacement="Both" ValueChanged="Slider_Actions_Expenses_Food_ValueChanged">
+                            </Slider>
+                            <Label Content="$300" Style="{StaticResource Label_Main}" FontSize="13"/>
+                        </StackPanel>
+
+                    </StackPanel>
+
+                    <StackPanel x:Name="StackPanel_Actions_Debt" Orientation="Vertical" HorizontalAlignment="Center" Margin="0" Visibility="Hidden">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
+                            <Label Content="Student Loans Paid In:" Style="{StaticResource Label_Main}" HorizontalAlignment="Center"/>
                             <TextBox x:Name="TextBox_Actions_Debt_Years" Style="{StaticResource TextBox_Main}" Width="30" HorizontalContentAlignment="Center" Padding="1"/>
                             <Label Content="year(s)" Style="{StaticResource Label_Main}"/>
                         </StackPanel>
@@ -663,6 +876,7 @@
                             <TextBox x:Name="TextBox_Actions_Debt_RemainingDebt" Grid.Row="2" Grid.Column="1" Text="{Binding Player.Debt}" Style="{StaticResource TextBox_Main}" Width="70" Height="25" HorizontalAlignment="Left"/>
                         </Grid>
                     </StackPanel>
+                    
 
                     <StackPanel x:Name="StackPanel_Actions_Loans" Orientation="Vertical" HorizontalAlignment="Center" Margin="5" Visibility="Hidden">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

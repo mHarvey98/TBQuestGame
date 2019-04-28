@@ -19,6 +19,7 @@ using System.Windows.Resources;
 using TBQuestGame;
 using WageSlave.Models.GameObjects;
 using WageSlave.PresentationLayer;
+using TBQuestGame.Models;
 
 namespace TBQuestGame.PresentationLayer
 {
@@ -29,6 +30,7 @@ namespace TBQuestGame.PresentationLayer
     {
         public enum AssetTypes { Businesses, OtherItems, RealEstate, Stocks, Vehicles}
         public enum ActionTypes { Assets, Housing, Commuting, Work, Expenses, Debt, Loans } // Other ideas: Living expenses, Work-related actions (Quit, work more hours -- raise income, lower happiness)
+
 
         GameSessionViewModel _gameSessionViewModel;
         string lastMove = "UP";
@@ -52,6 +54,33 @@ namespace TBQuestGame.PresentationLayer
 
             ComboBox_LocationAssetTypes.ItemsSource = Enum.GetValues(typeof(AssetTypes));
             ComboBox_LocationAssetTypes.SelectedValue = AssetTypes.Businesses;
+
+
+            // "Housing"
+            ComboBox_Housing_Options.ItemsSource = Enum.GetValues(typeof(Player.HousingOptions));
+            ComboBox_Housing_Options.SelectedValue = Player.HousingOptions.Rent;
+
+            ComboBox_Actions_Housing_OwnHouse.ItemsSource = _gameSessionViewModel.Player.PlayerGameItems.OfType<RealEstate>();
+            try
+            {
+                ComboBox_Actions_Housing_OwnHouse.SelectedValue = _gameSessionViewModel.Player.PlayerGameItems.OfType<RealEstate>().FirstOrDefault();
+            }
+            catch (Exception)
+            {
+            }
+
+            // "Commuting"
+            ComboBox_Commuting_Options.ItemsSource = Enum.GetValues(typeof(Player.CommutingOptions));
+            ComboBox_Commuting_Options.SelectedValue = Player.CommutingOptions.Bicycle;
+
+            ComboBox_Actions_Commuting_Cars.ItemsSource = _gameSessionViewModel.Player.PlayerGameItems.OfType<Vehicle>();
+            try
+            {
+                ComboBox_Actions_Commuting_Cars.SelectedValue = _gameSessionViewModel.Player.PlayerGameItems.OfType<Vehicle>().FirstOrDefault();
+            }
+            catch (Exception)
+            {
+            }
 
             // "Debt"
             //TextBox_Actions_Debt_Years.Text = (double)Slider_Actions_Debt_LoanPayments. * 52;
@@ -95,15 +124,13 @@ namespace TBQuestGame.PresentationLayer
             //_gameSessionViewModel.Player.PreviousCash = _gameSessionViewModel.Player.Cash;
         }
 
-        private void ComboBox_AssetTypes_SelectionChanged(object sender, SelectionChangedEventArgs e) // updates Asset Name combobox with appropriate Assets when Asset Type combobox is changed
-                                                                                                      // todo ... Change the AssetName list to include all Player Assets   
+        private void ComboBox_AssetTypes_SelectionChanged(object sender, SelectionChangedEventArgs e) // updates Asset Name combobox with appropriate Assets when Asset Type combobox is changed                                                                                                  
         {
             AssetTypesChanged();
             AssetNameChanged();
         }
 
         private void ComboBox_AssetName_SelectionChanged(object sender, SelectionChangedEventArgs e) // Updates Asset info textbox text with description (for vehicle, other-item, real estate)
-                                                                                                     // todo ... Change this Asset list to include all Player Assets   
         {
             AssetNameChanged();
         }
@@ -190,6 +217,7 @@ namespace TBQuestGame.PresentationLayer
             try
             {
                 GameItem gameItem = (GameItem)ComboBox_AssetName.SelectedValue;
+                gameItem = _gameSessionViewModel.CurrentGameItem;
                 TextBox_AssetsOwned_CurrentValue.Text = gameItem.Value.ToString();
             }
             catch (Exception)
@@ -250,7 +278,7 @@ namespace TBQuestGame.PresentationLayer
 
         private void ComboBox_Actions_SelectionChanged(object sender, SelectionChangedEventArgs e) // Shows different stackpanels based on which action type is selected
         {
-            List<StackPanel> Action_StackPanels = new List<StackPanel> { StackPanel_Actions_Example, StackPanel_Actions_Assets, StackPanel_Actions_Debt, StackPanel_Actions_Loans }; // have to add new action stackPanels here manually
+            List<StackPanel> Action_StackPanels = new List<StackPanel> { StackPanel_Actions_Example, StackPanel_Actions_Assets, StackPanel_Actions_Housing, StackPanel_Actions_Debt, StackPanel_Actions_Loans, StackPanel_Actions_Work, StackPanel_Actions_Expenses, StackPanel_Actions_Commuting }; // have to add new action stackPanels here manually
             foreach (StackPanel stackPanel in Action_StackPanels)
             {
                 stackPanel.Visibility = Visibility.Hidden;
@@ -264,12 +292,16 @@ namespace TBQuestGame.PresentationLayer
                     StackPanel_Actions_Assets.Visibility = Visibility.Visible;
                     break;
                 case ActionTypes.Housing:
+                    StackPanel_Actions_Housing.Visibility = Visibility.Visible;
                     break;
                 case ActionTypes.Commuting:
+                    StackPanel_Actions_Commuting.Visibility = Visibility.Visible;
                     break;
                 case ActionTypes.Work:
+                    StackPanel_Actions_Work.Visibility = Visibility.Visible;
                     break;
                 case ActionTypes.Expenses:
+                    StackPanel_Actions_Expenses.Visibility = Visibility.Visible;
                     break;
                 case ActionTypes.Debt:
                     StackPanel_Actions_Debt.Visibility = Visibility.Visible;
@@ -376,8 +408,9 @@ namespace TBQuestGame.PresentationLayer
             try
             {
                 GameItem gameItem = (GameItem)ComboBox_LocationAssetName.SelectedValue;
+                gameItem = _gameSessionViewModel.CurrentLocationGameItem;
 
-                switch (gameItem)
+                switch (gameItem) // Polymorphism
                 {
                     case Business business:
                         Business B_item = (Business)gameItem; // Allows the use of Business properties of the item
@@ -449,6 +482,25 @@ namespace TBQuestGame.PresentationLayer
                     }
                 }
             }
+            //Update houses available to live in
+            ComboBox_Actions_Housing_OwnHouse.ItemsSource = _gameSessionViewModel.Player.PlayerGameItems.OfType<RealEstate>();
+            try
+            {
+                ComboBox_Actions_Housing_OwnHouse.SelectedValue = _gameSessionViewModel.Player.PlayerGameItems.OfType<RealEstate>().FirstOrDefault();
+            }
+            catch (Exception)
+            {
+            }
+
+            // Update cars avaliable to commute with
+            ComboBox_Actions_Commuting_Cars.ItemsSource = _gameSessionViewModel.Player.PlayerGameItems.OfType<Vehicle>();
+            try
+            {
+                ComboBox_Actions_Commuting_Cars.SelectedValue = _gameSessionViewModel.Player.PlayerGameItems.OfType<Vehicle>().FirstOrDefault();
+            }
+            catch (Exception)
+            {
+            }
         }
 
         private void Slider_Actions_Debt_LoanPayments_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -475,7 +527,8 @@ namespace TBQuestGame.PresentationLayer
         {
             try
             {
-                TextBox_Actions_Debt_WeeklyPayment.Text = (_gameSessionViewModel.WeeklyPayment - _gameSessionViewModel.Player.CostOfLiving).ToString();
+                //TextBox_Actions_Debt_WeeklyPayment.Text = (_gameSessionViewModel.WeeklyPayment - _gameSessionViewModel.Player.CostOfLiving).ToString();
+                TextBox_Actions_Debt_WeeklyPayment.Text = ((int)_gameSessionViewModel.Player.DebtPayment).ToString();
             }
             catch (Exception)
             { }
@@ -484,7 +537,9 @@ namespace TBQuestGame.PresentationLayer
 
         private void Button_Actions_Assets_SeeDetails_Click(object sender, RoutedEventArgs e)
         {
-            ItemDetailsView itemDetails = new ItemDetailsView(_gameSessionViewModel, (AssetTypes)ComboBox_LocationAssetTypes.SelectedValue, true); // Send the View Model to Item Details window... There might be a better way to do this
+            _gameSessionViewModel.CurrentLocationGameItem = (GameItem)ComboBox_LocationAssetName.SelectedItem;
+
+            ItemDetailsView itemDetails = new ItemDetailsView(_gameSessionViewModel, (AssetTypes)ComboBox_LocationAssetTypes.SelectedItem, true); // Send the View Model to Item Details window... There might be a better way to do this
             
             itemDetails.ShowDialog();            
         }
@@ -572,6 +627,26 @@ namespace TBQuestGame.PresentationLayer
                 LocationAssetNameChanged();
                 AssetTypesChanged();
                 AssetNameChanged();
+
+                // Update houses available to live in
+                ComboBox_Actions_Housing_OwnHouse.ItemsSource = _gameSessionViewModel.Player.PlayerGameItems.OfType<RealEstate>();
+                try
+                {
+                    ComboBox_Actions_Housing_OwnHouse.SelectedValue = _gameSessionViewModel.Player.PlayerGameItems.OfType<RealEstate>().FirstOrDefault();
+                }
+                catch (Exception)
+                {
+                }
+
+                // Update cars available to commute with
+                ComboBox_Actions_Commuting_Cars.ItemsSource = _gameSessionViewModel.Player.PlayerGameItems.OfType<Vehicle>();
+                try
+                {
+                    ComboBox_Actions_Commuting_Cars.SelectedValue = _gameSessionViewModel.Player.PlayerGameItems.OfType<Vehicle>().FirstOrDefault();
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -651,6 +726,201 @@ namespace TBQuestGame.PresentationLayer
             }
         }
 
+        private void ProgressBar_Happiness_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            //if (_gameSessionViewModel.Player.Happiness <= 100 && _gameSessionViewModel.Player.Happiness > 75)
+            //{
+            //    ProgressBar_Happiness.Foreground = Brushes.Green;
+            //}
 
+            //else if (_gameSessionViewModel.Player.Happiness <= 75 && _gameSessionViewModel.Player.Happiness > 50)
+            //{
+            //    ProgressBar_Happiness.Foreground = Brushes.Yellow;
+            //}
+
+            //else if (_gameSessionViewModel.Player.Happiness <= 50 && _gameSessionViewModel.Player.Happiness > 25)
+            //{
+            //    ProgressBar_Happiness.Foreground = Brushes.Orange; 
+            //}
+
+            //else if (_gameSessionViewModel.Player.Happiness <= 25 && _gameSessionViewModel.Player.Happiness > 0)
+            //{
+            //    ProgressBar_Happiness.Foreground = Brushes.Red;
+            //}
+
+
+            //ProgressBar_Happiness1.Foreground = _gameSessionViewModel.ConvertToBrush(ProgressBar_Happiness.Value);
+
+
+            //ProgressBar_Happiness2.Opacity = ((1 / _gameSessionViewModel.Player.Happiness) * 10) * 2;
+
+
+            ProgressBar_Happiness1.Opacity = (_gameSessionViewModel.Player.Happiness / 100);
+        }
+
+        private void Slider_Actions_WorkHours_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            _gameSessionViewModel.UpdatePlayerWage((int)Slider_Actions_WorkHours.Value);
+        }
+
+        private void ComboBox_Housing_Options_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            List<StackPanel> Action_Housing_StackPanels = new List<StackPanel> { StackPanel_Actions_Housing_OwnHouse, StackPanel_Actions_Housing_Rent, StackPanel_Actions_Housing_StayWithParents }; // have to add new action stackPanels here manually
+            foreach (StackPanel stackPanel in Action_Housing_StackPanels)
+            {
+                stackPanel.Visibility = Visibility.Hidden;
+            }
+
+            Player.HousingOptions housingOptions = (Player.HousingOptions)this.ComboBox_Housing_Options.SelectedItem; // gets the Asset type that's selected
+
+            switch (housingOptions)
+            {
+                case Player.HousingOptions.Rent:
+                    StackPanel_Actions_Housing_Rent.Visibility = Visibility.Visible;
+                    break;
+                case Player.HousingOptions.Own_House:
+                    StackPanel_Actions_Housing_OwnHouse.Visibility = Visibility.Visible;
+                    break;
+                case Player.HousingOptions.Stay_With_Parents:
+                    StackPanel_Actions_Housing_StayWithParents.Visibility = Visibility.Visible;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void Slider_Actions_Housing_Rent_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            double monthlyRent = Slider_Actions_Housing_Rent.Value;
+
+            Textbox_Actions_Housing_Rent_WeeklyCost.Text = ((int)(monthlyRent / 4)).ToString();
+        }
+
+        private void Button_Actions_Housing_RentApply_Click(object sender, RoutedEventArgs e)
+        {
+            Player.HousingOptions housingOptions = (Player.HousingOptions)this.ComboBox_Housing_Options.SelectedItem;
+
+            if (housingOptions == Player.HousingOptions.Own_House)
+            {
+                var realEstates = _gameSessionViewModel.Player.PlayerGameItems.OfType<RealEstate>().FirstOrDefault(); // Finds any RealEstate items in the Player's game items
+
+                if (realEstates != null) // doesn't allow player to "move in" if they own no RealEstate
+                {
+                    MessageBoxResult result = MessageBox.Show($"Are you sure you want to move here?", "Move", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                    switch (result)
+                    {
+                        case MessageBoxResult.Yes:
+                            _gameSessionViewModel.UpdatePlayerHousing((Player.HousingOptions)ComboBox_Housing_Options.SelectedItem, ((int)Slider_Actions_Housing_Rent.Value / 4));
+                            break;
+                        case MessageBoxResult.No:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                else
+                {
+                    MessageBox.Show("You don't own any Real Estate! Please select another housing option.", "No Real Estate Owned", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                }
+
+            }
+
+            else if (housingOptions == Player.HousingOptions.Rent || housingOptions == Player.HousingOptions.Stay_With_Parents)
+            {
+                MessageBoxResult result = MessageBox.Show($"Are you sure you want to move here?", "Move", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        _gameSessionViewModel.UpdatePlayerHousing((Player.HousingOptions)ComboBox_Housing_Options.SelectedItem, ((int)Slider_Actions_Housing_Rent.Value / 4));
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void Slider_Actions_Expenses_Food_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (Slider_Actions_Expenses_Food.IsLoaded && Slider_Actions_Expenses_SpendingBudget.IsLoaded) // makes sure both sliders are loaded before running this
+            {
+                // Updates player's "expenses" and correlating happiness
+                _gameSessionViewModel.UpdatePlayerExpenses((int)Slider_Actions_Expenses_Food.Value, (int)Slider_Actions_Expenses_SpendingBudget.Value);
+            }
+        }
+
+        private void ComboBox_Commuting_Options_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            List<StackPanel> Action_Commuting_StackPanels = new List<StackPanel> { StackPanel_Actions_Commuting_Bicycle, StackPanel_Actions_Commuting_Bus, StackPanel_Actions_Commuting_Cars }; // have to add new action stackPanels here manually
+            foreach (StackPanel stackPanel in Action_Commuting_StackPanels)
+            {
+                stackPanel.Visibility = Visibility.Hidden;
+            }
+
+            Player.CommutingOptions commutingOptions = (Player.CommutingOptions)this.ComboBox_Commuting_Options.SelectedItem; // gets the Commuting option type that's selected
+
+            switch (commutingOptions)
+            {
+                case Player.CommutingOptions.Bus:
+                    StackPanel_Actions_Commuting_Bus.Visibility = Visibility.Visible;
+                    break;
+                case Player.CommutingOptions.Bicycle:
+                    StackPanel_Actions_Commuting_Bicycle.Visibility = Visibility.Visible;
+                    break;
+                case Player.CommutingOptions.Car:
+                    StackPanel_Actions_Commuting_Cars.Visibility = Visibility.Visible;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void Button_Actions_Commuting_ApplyChanges_Click(object sender, RoutedEventArgs e)
+        {
+            Player.CommutingOptions commutingOptions = (Player.CommutingOptions)this.ComboBox_Commuting_Options.SelectedItem;
+
+            if (commutingOptions == Player.CommutingOptions.Car)
+            {
+                var cars = _gameSessionViewModel.Player.PlayerGameItems.OfType<Vehicle>().FirstOrDefault(); // Finds any Vehicle items in the Player's game items
+
+                if (cars != null) // doesn't allow player to "set commuting" if they own no vehicles
+                {
+                    MessageBoxResult result = MessageBox.Show($"Are you sure you want to change your commuting setting?", "Commuting", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                    switch (result)
+                    {
+                        case MessageBoxResult.Yes:
+                            _gameSessionViewModel.UpdatePlayerCommuting((Player.CommutingOptions)ComboBox_Commuting_Options.SelectedItem);
+                            break;
+                        case MessageBoxResult.No:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                else
+                {
+                    MessageBox.Show("You don't own any Vehicles! Please select another commuting option.", "No Vehicles Owned", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                }
+
+            }
+
+            else if (commutingOptions == Player.CommutingOptions.Bus || commutingOptions == Player.CommutingOptions.Bicycle)
+            {
+                MessageBoxResult result = MessageBox.Show($"Are you sure you want to change your commuting setting?", "Commuting", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        _gameSessionViewModel.UpdatePlayerCommuting((Player.CommutingOptions)ComboBox_Commuting_Options.SelectedItem);
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
     }
 }

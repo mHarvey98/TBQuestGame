@@ -15,6 +15,17 @@ namespace WageSlave.Models
         private int _id;
         private int _price;
         private int _value;
+        private double _happinessFactor;
+
+
+
+
+        public double HappinessFactor
+        {
+            get { return _happinessFactor; }
+            set { _happinessFactor = value; }
+        }
+
 
         public int Value
         {
